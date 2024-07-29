@@ -9,6 +9,7 @@ BOT_NICKNAME = config_data.nickname
 plugin = Plugin(
     build_event=lambda event: Event(event),
     build_result=lambda result: Result("text", result),
+    priority=100,
 )
 
 
@@ -33,7 +34,7 @@ def create_chat(whitegroups: set[str], blackgroups: set[str], Chat: type[Basecha
 
     chats: dict[str, Chat] = {}
 
-    @plugin.handle(None, {"group_id", "nickname", "to_me"}, priority=100, rule=rule)
+    @plugin.handle(None, {"group_id", "nickname", "to_me"}, rule=rule)
     async def _(event: Event):
         group_id = event.group_id
         if group_id not in chats:

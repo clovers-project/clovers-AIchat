@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-clovers = "^0.1.12"
+clovers = "^0.1.13"
 
 
 [build-system]
