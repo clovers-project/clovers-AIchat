@@ -14,7 +14,7 @@ plugin = Plugin(
 
 
 class Basechat(ABC):
-    running: bool
+    running: bool = False
 
     @abstractmethod
     async def chat(self, nickname: str, content: str) -> str: ...
