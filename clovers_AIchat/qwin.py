@@ -7,7 +7,7 @@ api_key = config_data.qwin_api_key
 host = config_data.qwin_host
 prompt_system = config_data.prompt_system.format(nickname=config_data.nickname)
 timeout = config_data.timeout
-
+model = config_data.qwin_model
 
 async_client = AsyncOpenAI(
     api_key=api_key,
@@ -20,7 +20,7 @@ class Chat(Basechat):
     async def ChatCompletions(self,messages:list[dict]) -> str:
         messages.insert(0,{"role": "system", "content": prompt_system})
         resp = await async_client.chat.completions.create(
-            model="qwen-long",
+            model=model,
             messages=messages,
         )
         return resp.choices[0].message.content

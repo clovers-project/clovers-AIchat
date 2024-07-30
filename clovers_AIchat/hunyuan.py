@@ -12,6 +12,7 @@ secret_key = config_data.hunyuan_secret_key
 host = config_data.hunyuan_host
 prompt_system = config_data.prompt_system.format(nickname=config_data.nickname)
 timeout = config_data.timeout
+model = config_data.hunyuan_model
 
 
 class Chat(Basechat):
@@ -96,7 +97,7 @@ class Chat(Basechat):
         assert self.messages[0]["Role"] == "user"
         messages = self.prompt_start + [{"Role": message["Role"], "Content": message["Content"]} for message in self.messages]
         try:
-            resp = await self.ChatCompletions({"Model": "hunyuan-lite", "Messages": messages})
+            resp = await self.ChatCompletions({"Model": model, "Messages": messages})
             self.messages.append(
                 {
                     "time": timestamp,
