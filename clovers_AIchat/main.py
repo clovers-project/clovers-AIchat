@@ -14,11 +14,19 @@ plugin = Plugin(
 
 
 class Basechat(ABC):
+    running: bool
+
     @abstractmethod
     async def chat(self, nickname: str, content: str) -> str: ...
 
+    async def sync_chat(self, **kwargs) -> str:
+        self.running = True
+        result = await self.chat(**kwargs)
+        self.running = False
+        return result
 
-pattern = re.compile(r"[^\u4e00-\u9fa5a-zA-Z]")
+
+pattern = re.compile(r"[^\u4e00-\u9fa5a-zA-Z\s]")
 str_filter = lambda x: pattern.sub("", x)
 
 
@@ -42,4 +50,6 @@ def create_chat(whitegroups: set[str], blackgroups: set[str], Chat: type[Basecha
         else:
             chat = chats[group_id]
         nickname = str_filter(event.nickname) or event.nickname[:2]
-        return await chat.chat(nickname=str_filter(nickname), content=BOT_NICKNAME + event.event.raw_command)
+        if chat.running:
+            return
+        return await chat.sync_chat(nickname=str_filter(nickname), content=BOT_NICKNAME + event.event.raw_command)
