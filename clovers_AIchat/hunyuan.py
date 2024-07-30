@@ -12,6 +12,7 @@ secret_key = config_data.hunyuan_secret_key
 host = config_data.hunyuan_host
 prompt_system = config_data.prompt_system.format(nickname=config_data.nickname)
 timeout = config_data.timeout
+memory = config_data.memory - 1
 model = config_data.hunyuan_model
 
 
@@ -24,18 +25,6 @@ class Chat(Basechat):
                 "Role": "system",
                 "Content": prompt_system,
             }
-        )
-        self.prompt_start.append(
-            {
-                "Role": "user",
-                "Content": "你好",
-            },
-        )
-        self.prompt_start.append(
-            {
-                "Role": "assistant",
-                "Content": "你好，有什么可以帮你的吗？",
-            },
         )
         self.client = httpx.AsyncClient()
 
@@ -90,7 +79,7 @@ class Chat(Basechat):
                 "Content": f"{nickname}({now.strftime('%Y-%m-%d %H:%M')}):{content}",
             },
         )
-        self.messages = self.messages[-20:]
+        self.messages = self.messages[-memory:]
         self.messages = [message for message in self.messages if message["time"] > timestamp - timeout]
         if self.messages[0]["Role"] == "assistant":
             self.messages = self.messages[1:]

@@ -7,6 +7,7 @@ api_key = config_data.qwin_api_key
 host = config_data.qwin_host
 prompt_system = config_data.prompt_system.format(nickname=config_data.nickname)
 timeout = config_data.timeout
+memory = config_data.memory - 1
 model = config_data.qwin_model
 
 async_client = AsyncOpenAI(
@@ -35,7 +36,7 @@ class Chat(Basechat):
                 "content": f"{nickname}({now.strftime("%Y-%m-%d %H:%M")}):{content}",
             },
         )
-        self.messages = self.messages[-20:]
+        self.messages = self.messages[-memory:]
         self.messages = [message for message in self.messages if message["time"] > timestamp - timeout]
         if self.messages[0]["role"] == "assistant":
             self.messages = self.messages[1:]
