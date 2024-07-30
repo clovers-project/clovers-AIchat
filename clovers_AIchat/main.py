@@ -27,7 +27,7 @@ class Basechat(ABC):
         try:
             result = await self.chat(**kwargs)
         except Exception as err:
-            logger.error(err)
+            logger.exception(err)
             result = None
         self.running = False
         return result
