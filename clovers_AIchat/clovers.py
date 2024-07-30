@@ -16,3 +16,7 @@ class Event:
     @property
     def to_me(self) -> str:
         return self.event.kwargs["to_me"]
+
+    @property
+    def permission(self) -> int:
+        return self.event.kwargs["permission"]

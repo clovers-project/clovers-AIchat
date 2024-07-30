@@ -1,6 +1,7 @@
 import re
 from abc import ABC, abstractmethod
 from clovers.core.plugin import Plugin, Result
+from clovers.core.logger import logger
 from .clovers import Event
 from .config import config_data
 
@@ -15,15 +16,25 @@ plugin = Plugin(
 
 class Basechat(ABC):
     running: bool = False
+    model: str
+    messages: list[dict]
 
     @abstractmethod
     async def chat(self, nickname: str, content: str) -> str: ...
 
     async def sync_chat(self, **kwargs) -> str:
         self.running = True
-        result = await self.chat(**kwargs)
+        try:
+            result = await self.chat(**kwargs)
+        except Exception as err:
+            logger.error(err)
+            result = None
         self.running = False
         return result
+
+    def clear_memory(self):
+        """记忆清除"""
+        self.messages.clear()
 
 
 pattern = re.compile(r"[^\u4e00-\u9fa5a-zA-Z\s]")
@@ -49,7 +60,17 @@ def create_chat(whitegroups: set[str], blackgroups: set[str], Chat: type[Basecha
             chat = chats[group_id] = Chat()
         else:
             chat = chats[group_id]
-        nickname = str_filter(event.nickname) or event.nickname[:2]
+
+        content = event.event.raw_command
+
+        if content.startswith("记忆清除"):
+            chat.clear_memory()
+            return "记忆已清除"
+
         if chat.running:
             return
-        return await chat.sync_chat(nickname=str_filter(nickname), content=BOT_NICKNAME + event.event.raw_command)
+
+        nickname = str_filter(event.nickname) or event.nickname[:2]
+        if not content.startswith(BOT_NICKNAME):
+            content = BOT_NICKNAME + content
+        return await chat.sync_chat(nickname=str_filter(nickname), content=content)

@@ -15,15 +15,15 @@ async_client = AsyncOpenAI(
     base_url=host,
 )
 
+
 class Chat(Basechat):
     def __init__(self) -> None:
         self.messages: list[dict] = []
-    async def ChatCompletions(self,messages:list[dict]) -> str:
-        messages.insert(0,{"role": "system", "content": prompt_system})
-        resp = await async_client.chat.completions.create(
-            model=model,
-            messages=messages,
-        )
+        self.model = model
+
+    async def ChatCompletions(self, messages: list[dict]) -> str:
+        messages.insert(0, {"role": "system", "content": prompt_system})
+        resp = await async_client.chat.completions.create(model=self.model, messages=messages)
         return resp.choices[0].message.content
 
     async def chat(self, nickname: str, content: str):
@@ -33,7 +33,7 @@ class Chat(Basechat):
             {
                 "time": timestamp,
                 "role": "user",
-                "content": f"{nickname}({now.strftime("%Y-%m-%d %H:%M")}):{content}",
+                "content": f'{nickname}({now.strftime("%Y-%m-%d %H:%M")}):{content}',
             },
         )
         self.messages = self.messages[-memory:]

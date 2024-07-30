@@ -19,13 +19,7 @@ model = config_data.hunyuan_model
 class Chat(Basechat):
     def __init__(self) -> None:
         self.messages: list[dict] = []
-        self.prompt_start: list[dict] = []
-        self.prompt_start.append(
-            {
-                "Role": "system",
-                "Content": prompt_system,
-            }
-        )
+        self.model = model
         self.client = httpx.AsyncClient()
 
     @staticmethod
@@ -84,9 +78,10 @@ class Chat(Basechat):
         if self.messages[0]["Role"] == "assistant":
             self.messages = self.messages[1:]
         assert self.messages[0]["Role"] == "user"
-        messages = self.prompt_start + [{"Role": message["Role"], "Content": message["Content"]} for message in self.messages]
+        messages = [{"Role": "system", "Content": prompt_system}]
+        messages.extend({"Role": message["Role"], "Content": message["Content"]} for message in self.messages)
         try:
-            resp = await self.ChatCompletions({"Model": model, "Messages": messages})
+            resp = await self.ChatCompletions({"Model": self.model, "Messages": messages})
             self.messages.append(
                 {
                     "time": timestamp,
