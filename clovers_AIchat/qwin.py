@@ -1,4 +1,5 @@
 from openai import AsyncOpenAI
+from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
 from pydantic import BaseModel
 from .main import Basechat
 from .config import prompt_system
@@ -28,7 +29,7 @@ def create_Chat(config: dict):
             self.messages: list[dict] = []
 
         async def ChatCompletions(self):
-            messages = [{"role": "system", "content": prompt_system}]
+            messages: list[ChatCompletionMessageParam] = [{"role": "system", "content": prompt_system}]
             messages.extend({"role": message["role"], "content": message["content"]} for message in self.messages)
             resp = await async_client.chat.completions.create(model=self.model, messages=messages)
             return resp.choices[0].message.content
