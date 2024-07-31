@@ -60,17 +60,13 @@ def create_chat(whitegroups: set[str], blackgroups: set[str], Chat: type[Basecha
             chat = chats[group_id] = Chat()
         else:
             chat = chats[group_id]
-
         content = event.event.raw_command
-
+        if chat.running:
+            return
         if content.startswith("记忆清除"):
             chat.clear_memory()
             return "记忆已清除"
-
-        if chat.running:
-            return
-
-        nickname = str_filter(event.nickname) or event.nickname[:2]
+        nickname = str_filter(event.nickname) or event.nickname[0]
         if not content.startswith(BOT_NICKNAME):
             content = BOT_NICKNAME + content
         return await chat.sync_chat(nickname=str_filter(nickname), content=content)
