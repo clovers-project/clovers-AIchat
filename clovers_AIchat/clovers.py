@@ -14,7 +14,7 @@ class Event:
         return self.event.kwargs["group_id"]
 
     @property
-    def to_me(self) -> str:
+    def to_me(self) -> bool:
         return self.event.kwargs["to_me"]
 
     @property
