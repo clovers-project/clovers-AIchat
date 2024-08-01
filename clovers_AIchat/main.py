@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from clovers.core.plugin import Plugin, Result
 from clovers.core.logger import logger
 from .clovers import Event
-from .config import config_data
 
 
 plugin = Plugin(
@@ -13,8 +12,6 @@ plugin = Plugin(
     priority=100,
 )
 
-memory = config_data.memory - 1
-timeout = config_data.timeout
 
 pattern = re.compile(r"[^\u4e00-\u9fa5a-zA-Z\s]")
 str_filter = lambda x: pattern.sub("", x)
@@ -27,6 +24,8 @@ class Basechat(ABC):
     messages: list[dict]
     whitelist: set[str]
     blacklist: set[str]
+    memory: int
+    timeout: int | float
 
     @abstractmethod
     async def ChatCompletions(self) -> str | None: ...
@@ -36,8 +35,8 @@ class Basechat(ABC):
 
     def memory_filter(self, timestamp: int | float):
         """过滤记忆"""
-        self.messages = self.messages[-memory:]
-        self.messages = [message for message in self.messages if message["time"] > timestamp - timeout]
+        self.messages = self.messages[-self.memory :]
+        self.messages = [message for message in self.messages if message["time"] > timestamp - self.timeout]
         if self.messages[0]["role"] == "assistant":
             self.messages = self.messages[1:]
         assert self.messages[0]["role"] == "user"

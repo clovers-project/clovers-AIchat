@@ -16,6 +16,8 @@ class Config(BaseModel):
     whitelist: set[str] = set()
     blacklist: set[str] = set()
     prompt_system: str = config_data.prompt_system
+    memory = config_data.memory
+    timeout = config_data.timeout
 
 
 def headers(
@@ -65,6 +67,7 @@ def build_Chat(config: dict):
     secret_id = _config.secret_id
     secret_key = _config.secret_key
     prompt_system = _config.prompt_system
+
     client = httpx.AsyncClient()
 
     class Chat(Basechat):
@@ -72,6 +75,8 @@ def build_Chat(config: dict):
         model = _config.model
         whitelist = _config.whitelist
         blacklist = _config.blacklist
+        memory = _config.memory - 1
+        timeout = _config.timeout
 
         def __init__(self) -> None:
             self.messages: list[dict] = []
