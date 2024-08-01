@@ -44,7 +44,7 @@ class Basechat(ABC):
     async def chat(self, nickname: str, content: str) -> str | None:
         now = datetime.now()
         timestamp = now.timestamp()
-        self.messages.append({"time": timestamp, "role": "user", "content": f'{nickname}({now.strftime("%Y-%m-%d %H:%M")}):{content}'})
+        self.messages.append({"time": timestamp, "role": "user", "content": f'{nickname} ({now.strftime("%Y-%m-%d %H:%M")}):{content}'})
         self.memory_filter(timestamp)
         try:
             resp_content = await self.ChatCompletions()

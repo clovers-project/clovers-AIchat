@@ -12,8 +12,8 @@ class Config(BaseModel):
     whitelist: set[str] = set()
     blacklist: set[str] = set()
     prompt_system: str = config_data.prompt_system
-    memory = config_data.memory
-    timeout = config_data.timeout
+    memory: int = config_data.memory
+    timeout: int | float = config_data.timeout
 
 
 def build_Chat(config: dict):
