@@ -16,6 +16,9 @@ plugin = Plugin(
 memory = config_data.memory - 1
 timeout = config_data.timeout
 
+pattern = re.compile(r"[^\u4e00-\u9fa5a-zA-Z\s]")
+str_filter = lambda x: pattern.sub("", x)
+
 
 class Basechat(ABC):
     name: str
@@ -54,38 +57,34 @@ class Basechat(ABC):
         self.running = False
         return resp_content
 
+    @classmethod
+    def new(cls) -> None:
+        def rule(event: Event) -> bool: ...
 
-pattern = re.compile(r"[^\u4e00-\u9fa5a-zA-Z\s]")
-str_filter = lambda x: pattern.sub("", x)
-
-
-def new_chat(Chat: type[Basechat]) -> None:
-    def rule(event: Event) -> bool: ...
-
-    if whitelist := Chat.whitelist:
-        logger.info(f"{Chat.name} - {Chat.model} 检查规则设置为白名单模式：{whitelist}")
-        rule = lambda event: event.to_me and event.group_id in whitelist
-    elif blacklist := Chat.blacklist:
-        logger.info(f"{Chat.name} - {Chat.model} 检查规则设置为黑名单模式：{blacklist}")
-        rule = lambda event: event.to_me and event.group_id not in blacklist
-    else:
-        logger.info(f"{Chat.name} - {Chat.model} 未设置黑白名单，已在全部群组启用")
-        rule = lambda event: event.to_me
-
-    chats: dict[str, Chat] = {}
-
-    @plugin.handle(None, {"group_id", "nickname", "to_me"}, rule=rule, block=False)
-    async def _(event: Event):
-        group_id = event.group_id
-        if group_id not in chats:
-            chat = chats[group_id] = Chat()
+        if whitelist := cls.whitelist:
+            logger.info(f"{cls.name} - {cls.model} 检查规则设置为白名单模式：{whitelist}")
+            rule = lambda event: event.to_me and event.group_id in whitelist
+        elif blacklist := cls.blacklist:
+            logger.info(f"{cls.name} - {cls.model} 检查规则设置为黑名单模式：{blacklist}")
+            rule = lambda event: event.to_me and event.group_id not in blacklist
         else:
-            chat = chats[group_id]
-        content = event.event.raw_command
-        if chat.running:
-            return
-        if content.startswith("记忆清除"):
-            chat.clear_memory()
-            return "记忆已清除"
-        nickname = str_filter(event.nickname) or event.nickname[0]
-        return await chat.chat(nickname, content)
+            logger.info(f"{cls.name} - {cls.model} 未设置黑白名单，已在全部群组启用")
+            rule = lambda event: event.to_me
+
+        chats: dict[str, cls] = {}
+
+        @plugin.handle(None, {"group_id", "nickname", "to_me"}, rule=rule, block=False)
+        async def _(event: Event):
+            group_id = event.group_id
+            if group_id not in chats:
+                chat = chats[group_id] = cls()
+            else:
+                chat = chats[group_id]
+            content = event.event.raw_command
+            if chat.running:
+                return
+            if content.startswith("记忆清除"):
+                chat.clear_memory()
+                return "记忆已清除"
+            nickname = str_filter(event.nickname) or event.nickname[0]
+            return await chat.chat(nickname, content)

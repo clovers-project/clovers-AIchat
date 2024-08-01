@@ -13,7 +13,7 @@ class Config(BaseModel):
     blacklist: set[str]
 
 
-def create_Chat(config: dict):
+def build_Chat(config: dict):
     _config = Config.model_validate(config)
     url = _config.url
     api_key = _config.api_key

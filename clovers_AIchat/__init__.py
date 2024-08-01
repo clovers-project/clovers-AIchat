@@ -1,19 +1,20 @@
 from .config import config_data
-from .qwin import create_Chat as create_QwinChat
-from .hunyuan import create_Chat as create_HunYuanChat
-from .main import plugin, new_chat
+from .main import plugin
+from .qwin import build_Chat as build_QwinChat
+from .hunyuan import build_Chat as build_HunYuanChat
 
 
 config_list = config_data.config_list
 
 for config_dict in config_list:
-    match config_dict["key"]:
+    key: str = config_dict["key"]
+    match key:
         case "qwin":
-            new_chat(create_QwinChat(config_dict))
+            build_QwinChat(config_dict).new()
         case "hunyuan":
-            new_chat(create_HunYuanChat(config_dict))
+            build_HunYuanChat(config_dict).new()
         case _:
-            raise ValueError(f'Invalid config key {config_dict["key"]}')
+            raise ValueError(f"Invalid config key {key}")
 
 
 __plugin__ = plugin
