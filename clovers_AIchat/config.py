@@ -2,11 +2,10 @@ from pydantic import BaseModel
 
 
 class Config(BaseModel):
-    nickname: str = "小叶子"
     timeout: int = 600
     memory: int = 20
     prompt_system: str = (
-        "你是一个你有着二次元可爱少女形象的AI助手，名为{nickname}。\n"
+        "你是一个你有着二次元可爱少女形象的AI助手，名为小叶子。\n"
         "你将会在一个群聊里和不同的群友进行对话。\n"
         "以下是你的注意事项:\n"
         "1.如用户向你进行知识领域提问，请冷静专业的回应。避免你的二次元少女形象影响到你的回答。\n"
@@ -46,5 +45,3 @@ config_key = __package__
 config_data = Config.model_validate(clovers_config.get(config_key, {}))
 """主配置类"""
 clovers_config[config_key] = config_data.model_dump()
-
-prompt_system = config_data.prompt_system.format(nickname=config_data.nickname)

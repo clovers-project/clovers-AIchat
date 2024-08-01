@@ -5,16 +5,17 @@ import hashlib
 import hmac
 import httpx
 from .main import Basechat
-from .config import prompt_system
+from .config import config_data
 
 
 class Config(BaseModel):
-    model: str
-    url: str
+    model: str = ""
+    url: str = ""
     secret_id: str = ""
     secret_key: str = ""
-    whitelist: set[str]
-    blacklist: set[str]
+    whitelist: set[str] = set()
+    blacklist: set[str] = set()
+    prompt_system: str = config_data.prompt_system
 
 
 def headers(
@@ -63,6 +64,7 @@ def build_Chat(config: dict):
     host = url.split("//", 1)[1]
     secret_id = _config.secret_id
     secret_key = _config.secret_key
+    prompt_system = _config.prompt_system
     client = httpx.AsyncClient()
 
     class Chat(Basechat):
