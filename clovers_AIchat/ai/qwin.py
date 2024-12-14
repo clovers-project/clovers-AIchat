@@ -2,26 +2,25 @@ from openai import AsyncOpenAI
 from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
 from pydantic import BaseModel
 from .main import Basechat
-from .config import config_data
 
 
 class Config(BaseModel):
-    model: str = ""
-    url: str = ""
-    api_key: str = ""
+    model: str
+    url: str
+    api_key: str
     whitelist: set[str] = set()
     blacklist: set[str] = set()
-    prompt_system: str = config_data.prompt_system
-    memory: int = config_data.memory
-    timeout: int | float = config_data.timeout
+    prompt_system: str
+    memory: int
+    timeout: int | float
 
 
 def build_Chat(config: dict):
     _config = Config.model_validate(config)
     url = _config.url
     api_key = _config.api_key
-    prompt_system = _config.prompt_system
     async_client = AsyncOpenAI(api_key=api_key, base_url=url)
+    prompt_system = _config.prompt_system
 
     class Chat(Basechat):
         name: str = "通义千问"
@@ -33,6 +32,13 @@ def build_Chat(config: dict):
 
         def __init__(self) -> None:
             self.messages: list[dict] = []
+
+        @staticmethod
+        def build_content(text: str, image_url: str) -> list:
+            return [
+                {"type": "text", "text": text},
+                {"type": "image_url", "image_url": {"url": image_url}},
+            ]
 
         async def ChatCompletions(self):
             messages: list[ChatCompletionMessageParam] = [{"role": "system", "content": prompt_system}]

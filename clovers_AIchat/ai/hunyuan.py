@@ -5,19 +5,18 @@ import hashlib
 import hmac
 import httpx
 from .main import Basechat
-from .config import config_data
 
 
 class Config(BaseModel):
-    model: str = ""
-    url: str = ""
-    secret_id: str = ""
-    secret_key: str = ""
+    model: str
+    url: str
+    secret_id: str
+    secret_key: str
     whitelist: set[str] = set()
     blacklist: set[str] = set()
-    prompt_system: str = config_data.prompt_system
-    memory: int = config_data.memory
-    timeout: int | float = config_data.timeout
+    prompt_system: str
+    memory: int
+    timeout: int | float
 
 
 def headers(
@@ -66,13 +65,13 @@ def build_Chat(config: dict):
     host = url.split("//", 1)[1]
     secret_id = _config.secret_id
     secret_key = _config.secret_key
-    prompt_system = _config.prompt_system
-
     client = httpx.AsyncClient()
+    prompt_system = _config.prompt_system
 
     class Chat(Basechat):
         name: str = "腾讯混元"
         model = _config.model
+
         whitelist = _config.whitelist
         blacklist = _config.blacklist
         memory = _config.memory - 1
@@ -80,6 +79,10 @@ def build_Chat(config: dict):
 
         def __init__(self) -> None:
             self.messages: list[dict] = []
+
+        @staticmethod
+        def build_content(text: str, image_url: str) -> str:
+            return text
 
         async def ChatCompletions(self):
             messages = [{"Role": "system", "Content": prompt_system}]

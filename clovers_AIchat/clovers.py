@@ -20,3 +20,9 @@ class Event:
     @property
     def permission(self) -> int:
         return self.event.kwargs["permission"]
+
+    @property
+    def image_url(self) -> str | None:
+        image_list = self.event.kwargs["image_list"]
+        if image_list:
+            return image_list[0]
