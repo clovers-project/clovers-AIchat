@@ -19,7 +19,7 @@ class Config(BaseModel):
 
     config_list: list[dict] = [
         {
-            "key": "qwin",
+            "key": "qwen",
             "model": "qwen-plus",
             "url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
             "api_key": "",
@@ -32,6 +32,23 @@ class Config(BaseModel):
             "url": "https://hunyuan.tencentcloudapi.com",
             "secret_id": "",
             "secret_key": "",
+            "whitelist": [],
+            "blacklist": [],
+        },
+        {
+            "key": "mix",
+            "text": {
+                "key": "qwen",
+                "model": "qwen-plus",
+                "url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+                "api_key": "",
+            },
+            "image": {
+                "key": "qwen",
+                "model": "qwen-vl-plus",
+                "url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+                "api_key": "",
+            },
             "whitelist": [],
             "blacklist": [],
         },

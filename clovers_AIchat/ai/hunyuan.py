@@ -4,7 +4,7 @@ import json
 import hashlib
 import hmac
 import httpx
-from .main import Basechat
+from .main import ChatManager, ChatInterface
 
 
 class Config(BaseModel):
@@ -68,7 +68,7 @@ def build_Chat(config: dict):
     client = httpx.AsyncClient()
     prompt_system = _config.prompt_system
 
-    class Chat(Basechat):
+    class Chat(ChatInterface, ChatManager):
         name: str = "腾讯混元"
         model = _config.model
 
@@ -77,11 +77,8 @@ def build_Chat(config: dict):
         memory = _config.memory - 1
         timeout = _config.timeout
 
-        def __init__(self) -> None:
-            self.messages: list[dict] = []
-
         @staticmethod
-        def build_content(text: str, image_url: str) -> str:
+        def build_content(text: str, image_url: str):
             return text
 
         async def ChatCompletions(self):

@@ -4,15 +4,36 @@ from typing import Any
 from clovers.core.logger import logger
 
 
-class Basechat(ABC):
+class ChatManager(ABC):
+    """模型运行类"""
+
     name: str
-    running: bool = False
+    """模型名"""
     model: str
-    messages: list[dict]
+    """模型版本名"""
     whitelist: set[str]
+    """白名单"""
     blacklist: set[str]
+    """黑名单"""
+    running: bool = False
+    """运行同步标签"""
+
+    @abstractmethod
+    async def chat(self, nickname: str, text: str, image_url: str | None) -> str | None: ...
+
+
+class ChatInterface(ABC):
+    """模型对话接口"""
+
+    messages: list[dict]
+    """对话记录"""
     memory: int
+    """对话记录长度"""
     timeout: int | float
+    """对话超时时间"""
+
+    def __init__(self) -> None:
+        self.messages: list[dict] = []
 
     @staticmethod
     @abstractmethod
@@ -20,9 +41,6 @@ class Basechat(ABC):
 
     @abstractmethod
     async def ChatCompletions(self) -> str | None: ...
-    def clear_memory(self):
-        """记忆清除"""
-        self.messages.clear()
 
     def memory_filter(self, timestamp: int | float):
         """过滤记忆"""
