@@ -53,6 +53,7 @@ def build_Chat(config: dict):
             self.textChat.messages.append({"time": timestamp, "role": "user", "content": formated_text})
             self.textChat.memory_filter(timestamp)
             if image_url:
+                self.imageChat.messages.clear()
                 contect = self.imageChat.build_content(text, image_url)
                 self.imageChat.messages.append({"time": 0, "role": "user", "content": contect})
                 ChatCompletions = self.imageChat.ChatCompletions
