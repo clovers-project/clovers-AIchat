@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+import httpx
 from openai import AsyncOpenAI
 from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
 from .main import ChatInterface, Info, ChatInfo
@@ -7,13 +8,15 @@ from .main import ChatInterface, Info, ChatInfo
 class Config(Info, ChatInfo, BaseModel):
     url: str
     api_key: str
+    proxies: dict | None = None
 
 
 def build_Chat(config: dict):
     _config = Config.model_validate(config)
     _url = _config.url
     _api_key = _config.api_key
-    async_client = AsyncOpenAI(api_key=_api_key, base_url=_url)
+    _client = httpx.AsyncClient(proxies=_config.proxies)
+    async_client = AsyncOpenAI(api_key=_api_key, base_url=_url, http_client=_client)
 
     class Chat(ChatInterface):
         name: str = "通义千问"

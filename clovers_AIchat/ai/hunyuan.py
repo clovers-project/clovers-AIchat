@@ -11,6 +11,7 @@ class Config(Info, ChatInfo, BaseModel):
     url: str
     secret_id: str
     secret_key: str
+    proxies: dict | None = None
 
 
 def headers(
@@ -59,7 +60,7 @@ def build_Chat(config: dict):
     host = url.split("//", 1)[1]
     secret_id = _config.secret_id
     secret_key = _config.secret_key
-    client = httpx.AsyncClient()
+    client = httpx.AsyncClient(proxies=_config.proxies)
 
     class Chat(ChatInterface):
         name: str = "腾讯混元"
@@ -83,6 +84,9 @@ def build_Chat(config: dict):
                 headers=headers(secret_id=secret_id, secret_key=secret_key, host=host, payload=payload),
                 content=payload,
             )
+            resp.raise_for_status()
+            if resp.status_code != 200:
+                raise RuntimeError(obj)
             return resp.json()["Response"]["Choices"][0]["Message"]["Content"]
 
     return Chat

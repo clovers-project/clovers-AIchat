@@ -7,12 +7,13 @@ from .main import ChatInterface, Info, ChatInfo
 class Config(Info, ChatInfo, BaseModel):
     url: str
     api_key: str
+    proxies: dict | None = None
 
 
 def build_Chat(config: dict):
     _config = Config.model_validate(config)
     url = f"{_config.url.rstrip("/")}/{_config.model}:generateContent?key={_config.api_key}"
-    client = httpx.AsyncClient(headers={"Content-Type": "application/json"})
+    client = httpx.AsyncClient(headers={"Content-Type": "application/json"}, proxies=_config.proxies)
 
     class Chat(ChatInterface):
         name: str = "Gemini"
@@ -27,10 +28,9 @@ def build_Chat(config: dict):
         async def build_content(text: str, image_url: str | None):
             data: list[dict] = [{"text": text}]
             if image_url:
-                async with httpx.AsyncClient() as client:
-                    response = await client.get(image_url)
-                    response.raise_for_status()
-                    image_data = base64.b64encode(response.content).decode("utf-8")
+                response = await client.get(image_url)
+                response.raise_for_status()
+                image_data = base64.b64encode(response.content).decode("utf-8")
                 data.append({"inline_data": {"mime_type": "image/jpeg", "data": image_data}})
             return data
 
@@ -53,6 +53,7 @@ def build_Chat(config: dict):
                 ],
             }
             resp = await client.post(url, json=data)
+            resp.raise_for_status()
             parts = resp.json()["candidates"][0]["content"]["parts"]
             return "".join(d["text"] for d in parts if "text" in d)
 
