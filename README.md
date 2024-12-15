@@ -147,7 +147,7 @@ api_key = ""
 
 如果你的模型配置的 key 是 `gemini`,那么你还需要填写以下参数：
 
-`url` 模型 api 接入点，默认为 `https://generativelanguage.googleapis.com/v1beta/models`
+`url` 模型 api 接入点，默认为 `https://generativelanguage.googleapis.com/v1beta/models`,使用的方法为 generateContent 暂时不能修改。
 
 `api_key` 谷歌云 api key
 
