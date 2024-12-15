@@ -85,8 +85,6 @@ def build_Chat(config: dict):
                 content=payload,
             )
             resp.raise_for_status()
-            if resp.status_code != 200:
-                raise RuntimeError(obj)
             return resp.json()["Response"]["Choices"][0]["Message"]["Content"]
 
     return Chat
