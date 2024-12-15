@@ -6,3 +6,4 @@ _✨ clovers 接入 AI api✨_
 
 - [x] 腾讯混元大模型
 - [x] 通义千问
+- [x] gemini

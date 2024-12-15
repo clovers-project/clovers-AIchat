@@ -36,6 +36,14 @@ class Config(BaseModel):
             "blacklist": [],
         },
         {
+            "key": "gemini",
+            "model": "gemini-1.5-flash",
+            "url": "https://generativelanguage.googleapis.com/v1beta/models",
+            "api_key": "",
+            "whitelist": [],
+            "blacklist": [],
+        },
+        {
             "key": "mix",
             "text": {
                 "key": "qwen",

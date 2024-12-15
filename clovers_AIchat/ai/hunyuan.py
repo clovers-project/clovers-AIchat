@@ -1,22 +1,16 @@
 from datetime import datetime, timezone
 from pydantic import BaseModel
-import json
 import hashlib
 import hmac
+import json
 import httpx
-from .main import ChatManager, ChatInterface
+from .main import ChatInterface, Info, ChatInfo
 
 
-class Config(BaseModel):
-    model: str
+class Config(Info, ChatInfo, BaseModel):
     url: str
     secret_id: str
     secret_key: str
-    whitelist: set[str] = set()
-    blacklist: set[str] = set()
-    prompt_system: str
-    memory: int
-    timeout: int | float
 
 
 def headers(
@@ -66,25 +60,24 @@ def build_Chat(config: dict):
     secret_id = _config.secret_id
     secret_key = _config.secret_key
     client = httpx.AsyncClient()
-    prompt_system = _config.prompt_system
 
-    class Chat(ChatInterface, ChatManager):
+    class Chat(ChatInterface):
         name: str = "腾讯混元"
         model = _config.model
-
+        prompt_system = _config.prompt_system
         whitelist = _config.whitelist
         blacklist = _config.blacklist
-        memory = _config.memory - 1
+        memory = _config.memory
         timeout = _config.timeout
 
         @staticmethod
-        def build_content(text: str, image_url: str):
+        async def build_content(text: str, image_url: str | None):
             return text
 
         async def ChatCompletions(self):
-            messages = [{"Role": "system", "Content": prompt_system}]
+            messages = [{"Role": "system", "Content": Chat.prompt_system}]
             messages.extend({"Role": message["role"], "Content": message["content"]} for message in self.messages)
-            payload = json.dumps({"Model": self.model, "Messages": messages}, separators=(",", ":"), ensure_ascii=False)
+            payload = json.dumps({"Model": Chat.model, "Messages": messages}, separators=(",", ":"), ensure_ascii=False)
             resp = await client.post(
                 url,
                 headers=headers(secret_id=secret_id, secret_key=secret_key, host=host, payload=payload),

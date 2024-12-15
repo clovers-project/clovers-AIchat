@@ -3,7 +3,7 @@ from clovers.core.plugin import Plugin, Result
 from clovers.core.logger import logger
 from .clovers import Event
 from .config import config_data
-from .ai.main import ChatManager
+from .ai.main import Manager
 from .ai.mix import build_Chat as build_MixChat, matchChat
 
 
@@ -15,7 +15,7 @@ plugin = Plugin(
 pattern = re.compile(r"[^\u4e00-\u9fa5a-zA-Z\s]")
 
 
-def new(cls: type[ChatManager]) -> None:
+def new(cls: type[Manager]) -> None:
     def rule(event: Event) -> bool: ...
 
     if whitelist := cls.whitelist:
@@ -28,7 +28,7 @@ def new(cls: type[ChatManager]) -> None:
         logger.info(f"{cls.name} - {cls.model} 未设置黑白名单，已在全部群组启用")
         rule = lambda event: event.to_me
 
-    chats: dict[str, ChatManager] = {}
+    chats: dict[str, Manager] = {}
 
     @plugin.handle(None, {"group_id", "nickname", "to_me", "image_list"}, rule=rule, block=False)
     async def _(event: Event):
@@ -41,6 +41,7 @@ def new(cls: type[ChatManager]) -> None:
         if chat.running:
             return
         nickname = pattern.sub("", event.nickname) or event.nickname[0]
+        chat.running = True
         return await chat.chat(nickname, text, event.image_url)
 
 
