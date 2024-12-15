@@ -70,7 +70,6 @@ def build_Chat(config: dict):
                 del self.textChat.messages[-1]
                 logger.exception(err)
                 resp_content = None
-            self.running = False
             return resp_content
 
     return Chat

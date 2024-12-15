@@ -87,5 +87,4 @@ class ChatInterface(ChatInfo, Manager):
             del self.messages[-1]
             logger.exception(err)
             return
-        self.running = False
         return resp_content

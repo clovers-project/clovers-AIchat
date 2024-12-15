@@ -42,7 +42,9 @@ def new(cls: type[Manager]) -> None:
             return
         nickname = pattern.sub("", event.nickname) or event.nickname[0]
         chat.running = True
-        return await chat.chat(nickname, text, event.image_url)
+        result = await chat.chat(nickname, text, event.image_url)
+        chat.running = False
+        return result
 
 
 config_list = config_data.config_list
