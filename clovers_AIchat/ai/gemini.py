@@ -54,6 +54,6 @@ def build_Chat(config: dict):
             }
             resp = await client.post(url, json=data)
             resp.raise_for_status()
-            return resp.json()["candidates"][0]["content"]["parts"][0]["text"]
+            return resp.json()["candidates"][0]["content"]["parts"][0]["text"].rstrip("\n")
 
     return Chat
