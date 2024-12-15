@@ -54,7 +54,6 @@ def build_Chat(config: dict):
             }
             resp = await client.post(url, json=data)
             resp.raise_for_status()
-            parts = resp.json()["candidates"][0]["content"]["parts"]
-            return "".join(d["text"] for d in parts if "text" in d)
+            return resp.json()["candidates"][0]["content"]["parts"][0]["text"]
 
     return Chat
