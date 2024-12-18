@@ -26,7 +26,3 @@ class Event:
         image_list = self.event.kwargs["image_list"]
         if image_list:
             return image_list[0]
-
-    @property
-    def permission(self) -> int:
-        return self.event.kwargs["permission"]

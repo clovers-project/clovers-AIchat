@@ -55,7 +55,7 @@ def new(cls: type[Manager]) -> None:
     def permission_check(event: Event) -> bool:
         return event.permission > 0
 
-    @plugin.handle("记忆清除", ["permission"], rule=[rule, permission_check], block=True)
+    @plugin.handle("记忆清除", ["group_id", "to_me" "permission"], rule=[rule, permission_check], block=True)
     async def _(event: Event):
         group_id = event.group_id
         if group_id not in chats:
