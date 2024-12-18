@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "clovers-aichat"
-version = "0.1.2r3"
+version = "0.1.3"
 description = ""
 authors = ["KarisAya <1048827424@qq.com>"]
 readme = "README.md"
