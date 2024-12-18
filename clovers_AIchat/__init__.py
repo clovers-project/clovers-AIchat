@@ -30,7 +30,13 @@ def new(cls: type[Manager]) -> None:
 
     chats: dict[str, Manager] = {}
 
-    @plugin.handle(None, {"group_id", "nickname", "to_me", "image_list"}, rule=rule, block=False)
+    @plugin.handle(
+        None,
+        ["group_id", "nickname", "to_me", "image_list"],
+        rule=rule,
+        priority=1,
+        block=False,
+    )
     async def _(event: Event):
         group_id = event.group_id
         if group_id not in chats:
@@ -45,6 +51,18 @@ def new(cls: type[Manager]) -> None:
         result = await chat.chat(nickname, text, event.image_url)
         chat.running = False
         return result
+
+    def permission_check(event: Event) -> bool:
+        return event.permission > 0
+
+    @plugin.handle("记忆清除", ["permission"], rule=[rule, permission_check], block=True)
+    async def _(event: Event):
+        group_id = event.group_id
+        if group_id not in chats:
+            return
+        chat = chats[group_id]
+        chat.memory_clear()
+        return f"【{chat.name} - {chat.model}】记忆已清除！"
 
 
 config_list = config_data.config_list

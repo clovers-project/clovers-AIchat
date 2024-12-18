@@ -87,4 +87,7 @@ def build_Chat(config: dict):
             resp.raise_for_status()
             return resp.json()["Response"]["Choices"][0]["Message"]["Content"]
 
+        def memory_clear(self) -> None:
+            self.messages.clear()
+
     return Chat

@@ -29,6 +29,9 @@ class Manager(Info, ABC):
     @abstractmethod
     async def chat(self, nickname: str, text: str, image_url: str | None) -> str | None: ...
 
+    @abstractmethod
+    def memory_clear(self) -> None: ...
+
 
 class ChatInfo:
     """对话设置"""

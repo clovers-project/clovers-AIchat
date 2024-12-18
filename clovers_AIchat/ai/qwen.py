@@ -42,4 +42,7 @@ def build_Chat(config: dict):
             resp = await async_client.chat.completions.create(model=Chat.model, messages=messages)
             return resp.choices[0].message.content
 
+        def memory_clear(self) -> None:
+            self.messages.clear()
+
     return Chat

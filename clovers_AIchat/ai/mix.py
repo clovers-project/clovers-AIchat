@@ -72,4 +72,7 @@ def build_Chat(config: dict):
                 resp_content = None
             return resp_content
 
+        def memory_clear(self) -> None:
+            self.textChat.messages.clear()
+
     return Chat
