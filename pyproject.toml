@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "clovers-aichat"
-version = "0.1.3"
+version = "0.2.0"
 description = ""
 authors = ["KarisAya <1048827424@qq.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-clovers = "^0.1.13"
+clovers = "^0.3.0"
 pydantic = "^2.8.2"
 httpx = "^0.27.0"
 openai = "^1.37.1"

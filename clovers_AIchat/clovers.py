@@ -1,4 +1,4 @@
-from clovers.core.plugin import Event as CloversEvent
+from clovers import Event as CloversEvent
 
 
 class Event:
@@ -7,22 +7,22 @@ class Event:
 
     @property
     def nickname(self) -> str:
-        return self.event.kwargs["nickname"]
+        return self.event.properties["nickname"]
 
     @property
     def group_id(self) -> str:
-        return self.event.kwargs["group_id"]
+        return self.event.properties["group_id"]
 
     @property
     def to_me(self) -> bool:
-        return self.event.kwargs["to_me"]
+        return self.event.properties["to_me"]
 
     @property
     def permission(self) -> int:
-        return self.event.kwargs["permission"]
+        return self.event.properties["permission"]
 
     @property
     def image_url(self) -> str | None:
-        image_list = self.event.kwargs["image_list"]
+        image_list = self.event.properties["image_list"]
         if image_list:
             return image_list[0]

@@ -64,7 +64,7 @@ class Config(BaseModel):
     ]
 
 
-from clovers.core.config import config as clovers_config
+from clovers.config import config as clovers_config
 
 config_key = __package__
 config_data = Config.model_validate(clovers_config.get(config_key, {}))

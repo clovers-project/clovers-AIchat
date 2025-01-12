@@ -1,6 +1,6 @@
 import re
-from clovers.core.plugin import Plugin, Result
-from clovers.core.logger import logger
+from clovers.plugin import Plugin, Result
+from clovers.logger import logger
 from collections.abc import Callable
 from .clovers import Event
 from .config import config_data
