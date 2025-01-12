@@ -1,7 +1,7 @@
 from datetime import datetime
 from abc import ABC, abstractmethod
 from typing import Any
-from clovers.core.logger import logger
+from clovers.logger import logger
 
 
 class Info:

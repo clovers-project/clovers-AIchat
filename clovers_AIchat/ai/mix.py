@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from clovers.core.logger import logger
+from clovers.logger import logger
 from .main import Info, Manager
 from .qwen import build_Chat as build_QwinChat
 from .hunyuan import build_Chat as build_HunYuanChat
