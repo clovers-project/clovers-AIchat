@@ -1,6 +1,21 @@
-# AI Chat
+<div align="center">
+
+# Clovers AIChat
+
+AI 群聊机器人群聊
 
 _✨ clovers 接入 AI api✨_
+
+[![python](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/)
+[![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
+[![license](https://img.shields.io/github/license/KarisAya/clovers_aichat.svg)](./LICENSE)
+[![pypi](https://img.shields.io/pypi/v/clovers_aichat.svg)](https://pypi.python.org/pypi/clovers_aichat)
+[![pypi download](https://img.shields.io/pypi/dm/clovers_aichat)](https://pypi.python.org/pypi/clovers_aichat)
+<br />
+
+[![机器人 bug 研究中心](https://img.shields.io/badge/QQ%E7%BE%A4-744751179-maroon?)](https://qm.qq.com/q/3vpD9Ypb0c)
+
+</div>
 
 目前支持的 AI 平台有：
 
@@ -10,22 +25,10 @@ _✨ clovers 接入 AI api✨_
 - [x] [Gemini](https://ai.google.dev/)
 - [x] [DeepSeek](https://www.deepseek.com/)
 
-# 使用
-
-1. 安装
+# 安装
 
 ```shell
 pip install clovers_AIchat
-```
-
-2. 使用
-
-打开项目 clovers.toml 配置文件主配置 plugins_list 列表添加 clovers_AIchat
-
-```toml
-[clovers]
-plugins_path = "./clovers_library"
-plugins_list = [ "clovers_AIchat",]
 ```
 
 # 配置
@@ -53,14 +56,6 @@ model = "hunyuan-lite"
 url = "https://hunyuan.tencentcloudapi.com"
 secret_id = ""
 secret_key = ""
-whitelist = []
-blacklist = []
-
-[[clovers_AIchat.config_list]]
-key = "gemini"
-model = "gemini-1.5-flash"
-url = "https://generativelanguage.googleapis.com/v1beta/models"
-api_key = ""
 whitelist = []
 blacklist = []
 
@@ -101,7 +96,19 @@ api_key = ""
 
 模型配置也就是 config_list 内的元素，包含以下参数：
 
-`key` 模型标识，目前支持 `hunyuan` 腾讯混元大模型 `qwen` 通义千问 `gemini` 谷歌 gemini 等 `mix` 图文混合模型（简单的用两个模型模拟图文多模态）。
+`key` 模型标识，目前支持
+
+`chatgpt` ChatGPT
+
+`hunyuan` 腾讯混元大模型
+
+`qwen` 通义千问
+
+`gemini` 谷歌 Gemini
+
+`deepseek` DeepSeek 等
+
+`mix` 图文混合模型（简单的用两个模型模拟图文多模态）。
 
 `model` 模型名称，例如：`hunyuan-lite` `gemini-1.5-flash` `qwen-vl-plus` 等等
 
@@ -113,9 +120,7 @@ api_key = ""
 
 注意：如果你配置了在一个群启用多个模型，那么多个模型都会响应。没人希望这样，所以请检查黑白名单。
 
-`proxies` 此模型客户端使用的代理，配置参照 [httpx](https://www.python-httpx.org/) client 的 proxies 参数
-
-实际使用时基本上只需要填写 "https://" 代理 ~~除非你使用支持 http 的二手 api 还开代理~~
+`proxy` 此模型客户端使用的代理，配置参照 [httpx](https://www.python-httpx.org/) client 的 proxy 参数
 
 `timeout` 为模型单独配置的记忆保留时间。
 
@@ -129,15 +134,15 @@ api_key = ""
 
 如果你的模型配置的 key 是 `chatgpt`,那么你还需要填写以下参数：
 
-`url` 模型 api 接入点，默认为 `https://dashscope.aliyuncs.com/compatible-mode/v1`
+`url` 模型 api 接入点，例如 `https://api.openai.com/v1`
 
-`api_key` 阿里云 api key
+`api_key` OpenAI api key
 
 ## 腾讯混元大模型
 
 如果你的模型配置的 key 是 `hunyuan`,那么你还需要填写以下参数：
 
-`url` 模型 api 接入点，默认为 `https://hunyuan.tencentcloudapi.com`
+`url` 模型 api 接入点，例如 `https://hunyuan.tencentcloudapi.com`
 
 `secret_id` 腾讯云 api 密钥 id
 
@@ -149,7 +154,7 @@ api_key = ""
 
 如果你的模型配置的 key 是 `qwen`,那么你还需要填写以下参数：
 
-`url` 模型 api 接入点，默认为 `https://dashscope.aliyuncs.com/compatible-mode/v1`
+`url` 模型 api 接入点，例如 `https://dashscope.aliyuncs.com/compatible-mode/v1`
 
 `api_key` 阿里云 api key
 
@@ -157,7 +162,7 @@ api_key = ""
 
 如果你的模型配置的 key 是 `gemini`,那么你还需要填写以下参数：
 
-`url` 模型 api 接入点，默认为 `https://generativelanguage.googleapis.com/v1beta/models`,使用的方法为 generateContent 暂时不能修改。
+`url` 模型 api 接入点，例如 `https://generativelanguage.googleapis.com/v1beta/models`,使用的方法为 generateContent 暂时不能修改。
 
 `api_key` 谷歌云 api key
 
@@ -165,7 +170,7 @@ api_key = ""
 
 如果你的模型配置的 key 是 `deepseek`,那么你还需要填写以下参数：
 
-`url` 模型 api 接入点，默认为 `https://api.deepseek.com/`
+`url` 模型 api 接入点，例如 `https://api.deepseek.com/`
 
 `api_key` DeepSeek api key
 

@@ -19,6 +19,14 @@ class Config(BaseModel):
 
     config_list: list[dict] = [
         {
+            "key": "chatgpt",
+            "model": "o1-mini",
+            "url": "https://api.openai.com/v1",
+            "api_key": "",
+            "whitelist": [],
+            "blacklist": [],
+        },
+        {
             "key": "qwen",
             "model": "qwen-plus",
             "url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
