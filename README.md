@@ -11,9 +11,6 @@ _✨ clovers 接入 AI api✨_
 [![license](https://img.shields.io/github/license/clovers-project/clovers-AIchat.svg)](./LICENSE)
 [![pypi](https://img.shields.io/pypi/v/clovers_aichat.svg)](https://pypi.python.org/pypi/clovers_aichat)
 [![pypi download](https://img.shields.io/pypi/dm/clovers_aichat)](https://pypi.python.org/pypi/clovers_aichat)
-<br />
-
-[![机器人 bug 研究中心](https://img.shields.io/badge/QQ%E7%BE%A4-744751179-maroon?)](https://qm.qq.com/q/3vpD9Ypb0c)
 
 </div>
 
