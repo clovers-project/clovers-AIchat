@@ -4,9 +4,11 @@ _✨ clovers 接入 AI api✨_
 
 目前支持的 AI 平台有：
 
-- [x] 腾讯混元大模型
-- [x] 通义千问
-- [x] gemini
+- [x] [ChatGPT](https://openai.com/)
+- [x] [腾讯混元大模型](https://hunyuan.tencent.com/)
+- [x] [通义千问](https://tongyi.aliyun.com/)
+- [x] [Gemini](https://ai.google.dev/)
+- [x] [DeepSeek](https://www.deepseek.com/)
 
 # 使用
 
@@ -123,6 +125,14 @@ api_key = ""
 
 以上三个的参数优先使用，如果没有配置就使用全局配置。
 
+## ChatGPT
+
+如果你的模型配置的 key 是 `chatgpt`,那么你还需要填写以下参数：
+
+`url` 模型 api 接入点，默认为 `https://dashscope.aliyuncs.com/compatible-mode/v1`
+
+`api_key` 阿里云 api key
+
 ## 腾讯混元大模型
 
 如果你的模型配置的 key 是 `hunyuan`,那么你还需要填写以下参数：
@@ -143,13 +153,21 @@ api_key = ""
 
 `api_key` 阿里云 api key
 
-## gemini
+## Gemini
 
 如果你的模型配置的 key 是 `gemini`,那么你还需要填写以下参数：
 
 `url` 模型 api 接入点，默认为 `https://generativelanguage.googleapis.com/v1beta/models`,使用的方法为 generateContent 暂时不能修改。
 
 `api_key` 谷歌云 api key
+
+## DeepSeek
+
+如果你的模型配置的 key 是 `deepseek`,那么你还需要填写以下参数：
+
+`url` 模型 api 接入点，默认为 `https://api.deepseek.com/`
+
+`api_key` DeepSeek api key
 
 ## 图文混合模型
 

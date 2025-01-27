@@ -10,6 +10,8 @@ from .gemini import build_Chat as build_GeminiChat
 def matchChat(config: dict):
     key = config["key"]
     match key:
+        case "chatgpt":
+            return build_OpenAIChat(config, "ChatGPT")
         case "qwen":
             return build_OpenAIChat(config, "通义千问")
         case "deepseek":
