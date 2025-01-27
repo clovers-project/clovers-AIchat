@@ -37,6 +37,9 @@ pip install clovers_AIchat
 
 下面是 config.py 文件对应的 clovers.toml 配置文件示例。
 
+<details>
+<summary>clovers.toml</summary>
+  
 ```toml
 [clovers_AIchat]
 timeout = 600
@@ -77,6 +80,7 @@ model = "qwen-vl-plus"
 url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 api_key = ""
 ```
+</details>
 
 `timeout` 记忆保留时间，单位秒
 
@@ -96,19 +100,13 @@ api_key = ""
 
 模型配置也就是 config_list 内的元素，包含以下参数：
 
-`key` 模型标识，目前支持
-
-`chatgpt` ChatGPT
-
-`hunyuan` 腾讯混元大模型
-
-`qwen` 通义千问
-
-`gemini` 谷歌 Gemini
-
-`deepseek` DeepSeek 等
-
-`mix` 图文混合模型（简单的用两个模型模拟图文多模态）。
+`key` 模型标识，目前支持 
+- `chatgpt` ChatGPT
+- `hunyuan` 腾讯混元大模型
+- `qwen` 通义千问
+- `gemini` 谷歌 Gemini
+- `deepseek` DeepSeek
+- `mix` 图文混合模型（简单的用两个模型模拟图文多模态）。
 
 `model` 模型名称，例如：`hunyuan-lite` `gemini-1.5-flash` `qwen-vl-plus` 等等
 
