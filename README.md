@@ -113,7 +113,7 @@ api_key = ""
 
 `proxies` 此模型客户端使用的代理，配置参照 [httpx](https://www.python-httpx.org/) client 的 proxies 参数
 
-实际使用时基本上只需要填写 "https://" 代理 ~~ 除非你使用支持 http 的二手 api 还开代理 ~~
+实际使用时基本上只需要填写 "https://" 代理 ~~除非你使用支持 http 的二手 api 还开代理~~
 
 `timeout` 为模型单独配置的记忆保留时间。
 
