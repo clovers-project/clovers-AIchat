@@ -8,18 +8,18 @@ from .main import ChatInterface, Info, ChatInfo
 class Config(Info, ChatInfo, BaseModel):
     url: str
     api_key: str
-    proxies: dict | None = None
+    proxy: str | None = None
 
 
-def build_Chat(config: dict):
+def build_Chat(config: dict, _name: str = "OpenAI"):
     _config = Config.model_validate(config)
     _url = _config.url
     _api_key = _config.api_key
-    _client = httpx.AsyncClient(proxies=_config.proxies)
+    _client = httpx.AsyncClient(headers={"Content-Type": "application/json"}, proxy=_config.proxy)
     async_client = AsyncOpenAI(api_key=_api_key, base_url=_url, http_client=_client)
 
     class Chat(ChatInterface):
-        name: str = "通义千问"
+        name = _name
         model = _config.model
         prompt_system = _config.prompt_system
         whitelist = _config.whitelist

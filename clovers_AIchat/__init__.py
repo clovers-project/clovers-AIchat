@@ -72,8 +72,11 @@ for cfg in config_list:
     _config.update(cfg)
 
     if key == "mix":
-        new(build_MixChat(_config))
+        ChatType = build_MixChat(_config)
     else:
-        new(matchChat(_config))
+        ChatType = matchChat(_config)
+    if ChatType:
+        new(ChatType)
+
 
 __plugin__ = plugin

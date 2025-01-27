@@ -42,7 +42,15 @@ class Config(BaseModel):
             "api_key": "",
             "whitelist": [],
             "blacklist": [],
-            "proxies": {"https://": "http://127.0.0.1:7897"},
+            "proxy": "http://127.0.0.1:7897",
+        },
+        {
+            "key": "deepseek",
+            "model": "deepseek-chat",
+            "url": "https://api.deepseek.com/",
+            "api_key": "",
+            "whitelist": [],
+            "blacklist": [],
         },
         {
             "key": "mix",

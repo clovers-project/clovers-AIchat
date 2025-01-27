@@ -11,7 +11,7 @@ class Config(Info, ChatInfo, BaseModel):
     url: str
     secret_id: str
     secret_key: str
-    proxies: dict | None = None
+    proxy: str | None = None
 
 
 def headers(
@@ -60,7 +60,7 @@ def build_Chat(config: dict):
     host = url.split("//", 1)[1]
     secret_id = _config.secret_id
     secret_key = _config.secret_key
-    client = httpx.AsyncClient(proxies=_config.proxies)
+    client = httpx.AsyncClient(headers={"Content-Type": "application/json"},proxy=_config.proxy)
 
     class Chat(ChatInterface):
         name: str = "腾讯混元"

@@ -7,14 +7,13 @@ from .main import ChatInterface, Info, ChatInfo
 class Config(Info, ChatInfo, BaseModel):
     url: str
     api_key: str
-    proxies: dict | None = None
+    proxy: str
 
 
 def build_Chat(config: dict):
     _config = Config.model_validate(config)
     url = f"{_config.url.rstrip("/")}/{_config.model}:generateContent?key={_config.api_key}"
-    client = httpx.AsyncClient(headers={"Content-Type": "application/json"}, proxies=_config.proxies)
-
+    client = httpx.AsyncClient(headers={"Content-Type": "application/json"},proxy=_config.proxy)
     class Chat(ChatInterface):
         name: str = "Gemini"
         model = _config.model

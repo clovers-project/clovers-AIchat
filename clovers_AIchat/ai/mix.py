@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from clovers.logger import logger
 from .main import Info, Manager
-from .qwen import build_Chat as build_QwinChat
+from .openai import build_Chat as build_OpenAIChat
 from .hunyuan import build_Chat as build_HunYuanChat
 from .gemini import build_Chat as build_GeminiChat
 
@@ -11,13 +11,16 @@ def matchChat(config: dict):
     key = config["key"]
     match key:
         case "qwen":
-            return build_QwinChat(config)
+            return build_OpenAIChat(config, "通义千问")
+        case "deepseek":
+            return build_OpenAIChat(config, "DeepSeek")
         case "hunyuan":
             return build_HunYuanChat(config)
         case "gemini":
             return build_GeminiChat(config)
         case _:
-            raise ValueError(f"不支持的AI类型:{key}")
+            logger.error(f"不支持的AI类型:{key}，配置信息已忽略")
+            logger.debug(config)
 
 
 class Config(Info, BaseModel):
@@ -30,6 +33,9 @@ def build_Chat(config: dict):
     _config = Config.model_validate(config)
     textChat = matchChat(config | _config.text)
     imageChat = matchChat(config | _config.image)
+
+    if not textChat or not imageChat:
+        return
 
     class Chat(Manager):
         name: str = "图文混合模型"
