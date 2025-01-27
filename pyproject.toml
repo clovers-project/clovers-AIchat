@@ -1,18 +1,18 @@
-[tool.poetry]
+[project]
 name = "clovers-aichat"
-version = "0.2.0r1"
+version = "0.2.1"
 description = ""
-authors = ["KarisAya <1048827424@qq.com>"]
+authors = [{ name = "KarisAya", email = "1048827424@qq.com" }]
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = "^3.12"
-clovers = "^0.3.0"
-pydantic = "^2.8.2"
-httpx = "^0.27.0"
-openai = "^1.37.1"
+requires-python = ">=3.12,<4.0.0"
+dependencies = [
+    "clovers (>=0.3.4,<0.4.0)",
+    "pydantic (>=2.10.6,<3.0.0)",
+    "openai (>=1.60.1,<2.0.0)",
+    "httpx (>=0.28.1,<0.29.0)",
+]
 
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
