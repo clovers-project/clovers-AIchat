@@ -8,7 +8,7 @@ _✨ clovers 接入 AI api✨_
 
 [![python](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/)
 [![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
-[![license](https://img.shields.io/github/license/clovers-project/clovers_aichat.svg)](./LICENSE)
+[![license](https://img.shields.io/github/license/clovers-project/clovers_AIchat.svg)](./LICENSE)
 [![pypi](https://img.shields.io/pypi/v/clovers_aichat.svg)](https://pypi.python.org/pypi/clovers_aichat)
 [![pypi download](https://img.shields.io/pypi/dm/clovers_aichat)](https://pypi.python.org/pypi/clovers_aichat)
 <br />
