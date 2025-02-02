@@ -25,6 +25,10 @@ _✨ clovers 接入 AI api✨_
 - [x] [Gemini](https://ai.google.dev/)
 - [x] [DeepSeek](https://www.deepseek.com/)
 
+# 使用
+
+使用 DeepSeek 时在对话后接 `--think` 可以输出思维链
+
 # 安装
 
 ```shell

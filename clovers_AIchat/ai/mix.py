@@ -3,6 +3,7 @@ from datetime import datetime
 from clovers.logger import logger
 from .main import Info, Manager
 from .openai import build_Chat as build_OpenAIChat
+from .deepseek import build_Chat as build_DeepSeekChat
 from .hunyuan import build_Chat as build_HunYuanChat
 from .gemini import build_Chat as build_GeminiChat
 
@@ -15,7 +16,7 @@ def matchChat(config: dict):
         case "qwen":
             return build_OpenAIChat(config, "通义千问")
         case "deepseek":
-            return build_OpenAIChat(config, "DeepSeek")
+            return build_DeepSeekChat(config)
         case "hunyuan":
             return build_HunYuanChat(config)
         case "gemini":

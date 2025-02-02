@@ -38,7 +38,7 @@ def new(cls: type[Manager]) -> None:
     async def _(event: Event):
         group_id = event.group_id
         if group_id not in chats:
-            return
+            return "【AIchat】未找到该群聊的AI对话"
         chat = chats[group_id]
         chat.memory_clear()
         return f"【{chat.name} - {chat.model}】记忆已清除！"
