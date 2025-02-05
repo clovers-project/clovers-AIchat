@@ -58,9 +58,8 @@ class ChatInterface(ChatInfo, Manager):
         super().__init__()
         self.messages: list[dict] = []
 
-    @staticmethod
     @abstractmethod
-    async def build_content(text: str, image_url: str | None) -> Any: ...
+    async def build_content(self, text: str, image_url: str | None) -> Any: ...
 
     @abstractmethod
     async def ChatCompletions(self) -> str | None: ...

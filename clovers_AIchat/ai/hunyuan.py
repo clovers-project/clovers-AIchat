@@ -54,40 +54,47 @@ def headers(
     }
 
 
-def build_Chat(config: dict):
-    _config = Config.model_validate(config)
-    url = _config.url
-    host = url.split("//", 1)[1]
-    secret_id = _config.secret_id
-    secret_key = _config.secret_key
-    client = httpx.AsyncClient(headers={"Content-Type": "application/json"},proxy=_config.proxy)
+class Chat(ChatInterface):
+    """腾讯混元"""
 
-    class Chat(ChatInterface):
-        name: str = "腾讯混元"
-        model = _config.model
-        prompt_system = _config.prompt_system
-        whitelist = _config.whitelist
-        blacklist = _config.blacklist
-        memory = _config.memory
-        timeout = _config.timeout
+    def __init__(self, config: dict, _name: str = "腾讯混元") -> None:
+        super().__init__()
+        _config = Config.model_validate(config)
+        self.name = _name
+        self.model = _config.model
+        self.prompt_system = _config.prompt_system
+        self.whitelist = _config.whitelist
+        self.blacklist = _config.blacklist
+        self.memory = _config.memory
+        self.timeout = _config.timeout
+        self.url = _config.url
+        self.host = self.url.split("//", 1)[1]
+        self.secret_id = _config.secret_id
+        self.secret_key = _config.secret_key
+        self.async_client = httpx.AsyncClient(proxy=_config.proxy)
 
-        @staticmethod
-        async def build_content(text: str, image_url: str | None):
-            return text
+    @staticmethod
+    async def build_content(text: str, image_url: str | None):
+        return text
 
-        async def ChatCompletions(self):
-            messages = [{"Role": "system", "Content": Chat.prompt_system}]
-            messages.extend({"Role": message["role"], "Content": message["content"]} for message in self.messages)
-            payload = json.dumps({"Model": Chat.model, "Messages": messages}, separators=(",", ":"), ensure_ascii=False)
-            resp = await client.post(
-                url,
-                headers=headers(secret_id=secret_id, secret_key=secret_key, host=host, payload=payload),
+    async def ChatCompletions(self):
+        messages = [{"Role": "system", "Content": self.prompt_system}]
+        messages.extend({"Role": message["role"], "Content": message["content"]} for message in self.messages)
+        payload = {"Model": self.model, "Messages": messages}
+        payload = json.dumps({"Model": self.model, "Messages": messages}, separators=(",", ":"), ensure_ascii=False)
+        resp = (
+            await self.async_client.post(
+                self.url,
+                headers=headers(
+                    secret_id=self.secret_id,
+                    secret_key=self.secret_key,
+                    host=self.host,
+                    payload=payload,
+                ),
                 content=payload,
             )
-            resp.raise_for_status()
-            return resp.json()["Response"]["Choices"][0]["Message"]["Content"]
+        ).raise_for_status()
+        return resp.json()["Response"]["Choices"][0]["Message"]["Content"]
 
-        def memory_clear(self) -> None:
-            self.messages.clear()
-
-    return Chat
+    def memory_clear(self) -> None:
+        self.messages.clear()

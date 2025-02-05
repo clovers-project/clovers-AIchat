@@ -10,52 +10,50 @@ class Config(Info, ChatInfo, BaseModel):
     proxy: str
 
 
-def build_Chat(config: dict):
-    _config = Config.model_validate(config)
-    url = f"{_config.url.rstrip("/")}/{_config.model}:generateContent?key={_config.api_key}"
-    client = httpx.AsyncClient(headers={"Content-Type": "application/json"},proxy=_config.proxy)
-    class Chat(ChatInterface):
-        name: str = "Gemini"
-        model = _config.model
-        prompt_system = _config.prompt_system
-        whitelist = _config.whitelist
-        blacklist = _config.blacklist
-        memory = _config.memory
-        timeout = _config.timeout
+class Chat(ChatInterface):
+    """Gemini"""
 
-        @staticmethod
-        async def build_content(text: str, image_url: str | None):
-            data: list[dict] = [{"text": text}]
-            if image_url:
-                response = await client.get(image_url)
-                response.raise_for_status()
-                image_data = base64.b64encode(response.content).decode("utf-8")
-                data.append({"inline_data": {"mime_type": "image/jpeg", "data": image_data}})
-            return data
+    def __init__(self, config: dict, _name: str = "Gemini") -> None:
+        super().__init__()
+        _config = Config.model_validate(config)
+        self.name = _name
+        self.model = _config.model
+        self.prompt_system = _config.prompt_system
+        self.whitelist = _config.whitelist
+        self.blacklist = _config.blacklist
+        self.memory = _config.memory
+        self.timeout = _config.timeout
+        self.url = f"{_config.url.rstrip("/")}/{_config.model}:generateContent?key={_config.api_key}"
+        self.async_client = httpx.AsyncClient(proxy=_config.proxy)
 
-        async def ChatCompletions(self):
-            data = {
-                "system_instruction": {"parts": {"text": Chat.prompt_system}},
-                "contents": [
-                    (
-                        {
-                            "role": "user",
-                            "parts": message["content"],
-                        }
-                        if message["role"] == "user"
-                        else {
-                            "role": "model",
-                            "parts": [{"text": message["content"]}],
-                        }
-                    )
-                    for message in self.messages
-                ],
-            }
-            resp = await client.post(url, json=data)
-            resp.raise_for_status()
-            return resp.json()["candidates"][0]["content"]["parts"][0]["text"].rstrip("\n")
+    async def build_content(self, text: str, image_url: str | None):
+        data: list[dict] = [{"text": text}]
+        if image_url:
+            response = (await self.async_client.get(image_url)).raise_for_status()
+            image_data = base64.b64encode(response.content).decode("utf-8")
+            data.append({"inline_data": {"mime_type": "image/jpeg", "data": image_data}})
+        return data
 
-        def memory_clear(self) -> None:
-            self.messages.clear()
+    async def ChatCompletions(self):
+        data = {
+            "system_instruction": {"parts": {"text": self.prompt_system}},
+            "contents": [
+                (
+                    {
+                        "role": "user",
+                        "parts": message["content"],
+                    }
+                    if message["role"] == "user"
+                    else {
+                        "role": "model",
+                        "parts": [{"text": message["content"]}],
+                    }
+                )
+                for message in self.messages
+            ],
+        }
+        resp = (await self.async_client.post(self.url, json=data, headers={"Content-Type": "application/json"})).raise_for_status()
+        return resp.json()["candidates"][0]["content"]["parts"][0]["text"].rstrip("\n")
 
-    return Chat
+    def memory_clear(self) -> None:
+        self.messages.clear()
