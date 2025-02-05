@@ -48,6 +48,7 @@ def new(config: dict) -> None:
         prompt_system = event.event.raw_command[4:]
         chat = chat_manager.chat(event.group_id)
         if prompt_system:
+            chat.memory_clear()
             chat.set_prompt_system(
                 prompt_system
                 + '\n你收到的消息格式为 "昵称 (日期 时间):消息" 例如 "小明 (2024-5-31 12:00):你好" 你的回复不应该有昵称，时间和日期。'
