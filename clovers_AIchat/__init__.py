@@ -39,7 +39,24 @@ def new(config: dict) -> None:
         is_command = True
         chat = chat_manager.chat(event.group_id)
         chat.memory_clear()
-        return f"【{chat_manager.name} - {chat.model}】记忆已清除！"
+        return f"本群【{chat_manager.name} - {chat.model}】记忆已清除！"
+
+    @plugin.handle(["修改设定"], ["group_id", "to_me", "permission"], rule=[rule, permission_check], block=False)
+    async def _(event: Event):
+        nonlocal is_command
+        is_command = True
+        prompt_system = event.event.raw_command[4:]
+        chat = chat_manager.chat(event.group_id)
+        if prompt_system:
+            chat.set_prompt_system(
+                prompt_system
+                + '\n你收到的消息格式为 "昵称 (日期 时间):消息" 例如 "小明 (2024-5-31 12:00):你好" 你的回复不应该有昵称，时间和日期。'
+                "\n你收到的消息含有用户的昵称 你应该注意在与哪个用户对话 不要让昵称的含义影响到你的回复"
+            )
+            return f"本群【{chat_manager.name} - {chat.model}】设定已修改！"
+        else:
+            del chat_manager.chats[event.group_id]
+            return f"本群【{chat_manager.name} - {chat.model}】设定已重置！"
 
     def chat_rule(event: Event):
         nonlocal is_command

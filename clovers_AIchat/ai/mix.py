@@ -52,3 +52,6 @@ class Chat(AIChat):
 
     def memory_clear(self) -> None:
         self.chat_text.messages.clear()
+
+    def set_prompt_system(self, prompt_system: str) -> None:
+        self.chat_text.prompt_system = prompt_system

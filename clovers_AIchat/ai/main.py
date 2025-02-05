@@ -19,6 +19,9 @@ class AIChat(ABC):
     @abstractmethod
     def memory_clear(self) -> None: ...
 
+    @abstractmethod
+    def set_prompt_system(self, prompt_system: str) -> None: ...
+
 
 class ChatInfo:
     """对话设置"""
@@ -89,3 +92,6 @@ class ChatInterface(ChatInfo, AIChat):
 
     def memory_clear(self) -> None:
         self.messages.clear()
+
+    def set_prompt_system(self, prompt_system: str) -> None:
+        self.prompt_system = prompt_system
