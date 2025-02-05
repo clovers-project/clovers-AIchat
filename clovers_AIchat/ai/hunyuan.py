@@ -4,14 +4,12 @@ import hashlib
 import hmac
 import json
 import httpx
-from .main import ChatInterface, Info, ChatInfo
+from .main import ChatInterface, ChatInfo
 
 
-class Config(Info, ChatInfo, BaseModel):
-    url: str
+class Config(ChatInfo, BaseModel):
     secret_id: str
     secret_key: str
-    proxy: str | None = None
 
 
 def headers(
@@ -57,14 +55,11 @@ def headers(
 class Chat(ChatInterface):
     """腾讯混元"""
 
-    def __init__(self, config: dict, _name: str = "腾讯混元") -> None:
-        super().__init__()
+    def __init__(self, config: dict) -> None:
+        super().init()
         _config = Config.model_validate(config)
-        self.name = _name
         self.model = _config.model
         self.prompt_system = _config.prompt_system
-        self.whitelist = _config.whitelist
-        self.blacklist = _config.blacklist
         self.memory = _config.memory
         self.timeout = _config.timeout
         self.url = _config.url
@@ -95,6 +90,3 @@ class Chat(ChatInterface):
             )
         ).raise_for_status()
         return resp.json()["Response"]["Choices"][0]["Message"]["Content"]
-
-    def memory_clear(self) -> None:
-        self.messages.clear()

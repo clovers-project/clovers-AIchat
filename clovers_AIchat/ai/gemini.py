@@ -1,26 +1,21 @@
 from pydantic import BaseModel
 import httpx
 import base64
-from .main import ChatInterface, Info, ChatInfo
+from .main import ChatInterface, ChatInfo
 
 
-class Config(Info, ChatInfo, BaseModel):
-    url: str
+class Config(ChatInfo, BaseModel):
     api_key: str
-    proxy: str
 
 
 class Chat(ChatInterface):
     """Gemini"""
 
-    def __init__(self, config: dict, _name: str = "Gemini") -> None:
-        super().__init__()
+    def __init__(self, config: dict) -> None:
+        super().init()
         _config = Config.model_validate(config)
-        self.name = _name
         self.model = _config.model
         self.prompt_system = _config.prompt_system
-        self.whitelist = _config.whitelist
-        self.blacklist = _config.blacklist
         self.memory = _config.memory
         self.timeout = _config.timeout
         self.url = f"{_config.url.rstrip("/")}/{_config.model}:generateContent?key={_config.api_key}"
@@ -54,6 +49,3 @@ class Chat(ChatInterface):
         }
         resp = (await self.async_client.post(self.url, json=data, headers={"Content-Type": "application/json"})).raise_for_status()
         return resp.json()["candidates"][0]["content"]["parts"][0]["text"].rstrip("\n")
-
-    def memory_clear(self) -> None:
-        self.messages.clear()

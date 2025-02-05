@@ -1,47 +1,23 @@
-from pydantic import BaseModel
 from datetime import datetime
 from clovers.logger import logger
-from .main import Info, Manager
-from .openai import Chat as OpenAIChat
-from .deepseek import Chat as DeepSeekChat
-from .hunyuan import Chat as HunYuanChat
-from .gemini import Chat as GeminiChat
+from .main import AIChat, ChatInterface
 
 
-def matchChat(key: str):
-    match key:
-        case "chatgpt":
-            return OpenAIChat, "ChatGPT"
-        case "qwen":
-            return OpenAIChat, "通义千问"
-        case "deepseek":
-            return DeepSeekChat, "DeepSeek"
-        case "hunyuan":
-            return HunYuanChat, "腾讯混元"
-        case "gemini":
-            return GeminiChat, "Gemini"
-        case _:
-            raise ValueError(f"不支持的模型:{key}")
-
-
-class Config(Info, BaseModel):
-    model: str = ""
-    text: dict
-    image: dict
-
-
-class Chat(Manager):
-    def __init__(self, config: dict, _name: str = "图文混合模型") -> None:
+class Chat(AIChat):
+    def __init__(
+        self,
+        whitelist: set[str],
+        blacklist: set[str],
+        chat_text: ChatInterface,
+        chat_image: ChatInterface,
+        model: str = "",
+    ) -> None:
         super().__init__()
-        _config = Config.model_validate(config)
-        self.name = _name
-        self.whitelist = _config.whitelist
-        self.blacklist = _config.blacklist
-        ChatText, chat_text_name = matchChat(_config.text["key"])
-        ChatImage, chat_image_name = matchChat(_config.image["key"])
-        self.chat_text = ChatText(config | _config.text, chat_text_name)
-        self.chat_image = ChatImage(config | _config.image, chat_image_name)
-        self.model = f"text:{chat_text_name}:{self.chat_text.model} - image:{chat_image_name}:{self.chat_image.model}"
+        self.whitelist = whitelist
+        self.blacklist = blacklist
+        self.chat_text = chat_text
+        self.chat_image = chat_image
+        self.model = model
 
     async def chat(self, nickname: str, text: str, image_url: str | None) -> str | None:
         now = datetime.now()

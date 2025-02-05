@@ -2,26 +2,21 @@ from pydantic import BaseModel
 import httpx
 from openai import AsyncOpenAI
 from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
-from .main import ChatInterface, Info, ChatInfo
+from .main import ChatInterface, ChatInfo
 
 
-class Config(Info, ChatInfo, BaseModel):
-    url: str
+class Config(ChatInfo, BaseModel):
     api_key: str
-    proxy: str | None = None
 
 
 class Chat(ChatInterface):
     """OpenAI"""
 
-    def __init__(self, config: dict, _name: str = "OpenAI") -> None:
-        super().__init__()
+    def __init__(self, config: dict) -> None:
+        super().init()
         _config = Config.model_validate(config)
-        self.name = _name
         self.model = _config.model
         self.prompt_system = _config.prompt_system
-        self.whitelist = _config.whitelist
-        self.blacklist = _config.blacklist
         self.memory = _config.memory
         self.timeout = _config.timeout
         _url = _config.url
@@ -43,6 +38,3 @@ class Chat(ChatInterface):
         messages.extend({"role": message["role"], "content": message["content"]} for message in self.messages)
         resp = await self.async_client.chat.completions.create(model=self.model, messages=messages)
         return resp.choices[0].message.content
-
-    def memory_clear(self) -> None:
-        self.messages.clear()

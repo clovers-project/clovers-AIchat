@@ -4,27 +4,14 @@ from typing import Any
 from clovers.logger import logger
 
 
-class Info:
-    """实例设置"""
+class AIChat(ABC):
+    """对话模型"""
 
     model: str
     """模型版本名"""
-    whitelist: set[str] = set()
-    """白名单"""
-    blacklist: set[str] = set()
-    """黑名单"""
-
-
-class Manager(Info, ABC):
-    """实例运行管理类"""
-
-    name: str
-    """实例名称"""
-    running: bool = False
-    """运行同步标签"""
 
     def __init__(self) -> None:
-        self.running = False
+        self.running: bool = False
 
     @abstractmethod
     async def chat(self, nickname: str, text: str, image_url: str | None) -> str | None: ...
@@ -36,15 +23,21 @@ class Manager(Info, ABC):
 class ChatInfo:
     """对话设置"""
 
+    url: str
+    """接入点url"""
+    model: str
+    """模型版本名"""
     prompt_system: str
     """系统提示词"""
     memory: int
     """对话记录长度"""
     timeout: int | float
     """对话超时时间"""
+    proxy: str | None = None
+    """代理地址"""
 
 
-class ChatInterface(ChatInfo, Manager):
+class ChatInterface(ChatInfo, AIChat):
     """模型对话接口"""
 
     messages: list[dict]
@@ -54,9 +47,12 @@ class ChatInterface(ChatInfo, Manager):
     timeout: int | float
     """对话超时时间"""
 
-    def __init__(self) -> None:
+    def init(self) -> None:
         super().__init__()
         self.messages: list[dict] = []
+
+    @abstractmethod
+    def __init__(self, config: dict) -> None: ...
 
     @abstractmethod
     async def build_content(self, text: str, image_url: str | None) -> Any: ...
@@ -90,3 +86,6 @@ class ChatInterface(ChatInfo, Manager):
             logger.exception(err)
             return
         return resp_content
+
+    def memory_clear(self) -> None:
+        self.messages.clear()
