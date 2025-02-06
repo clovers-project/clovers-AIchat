@@ -20,34 +20,12 @@ class Chat(AIChat):
         self.model = model
 
     async def chat(self, nickname: str, text: str, image_url: str | None) -> str | None:
-        now = datetime.now()
-        timestamp = now.timestamp()
-        formated_text = f'{nickname} ({now.strftime("%Y-%m-%d %H:%M")}):{text}'
-        try:
-            contect = await self.chat_text.build_content(formated_text, image_url)
-        except Exception as err:
-            logger.exception(err)
-            return
-        self.chat_text.messages.append({"time": timestamp, "role": "user", "content": contect})
-        self.chat_text.memory_filter(timestamp)
         if image_url:
-            self.chat_image.messages.clear()
-            try:
-                imageChat_contect = await self.chat_image.build_content(formated_text, image_url)
-            except Exception as err:
-                logger.exception(err)
-                return
-            self.chat_image.messages.append({"time": 0, "role": "user", "content": imageChat_contect})
-            ChatCompletions = self.chat_image.ChatCompletions
+            self.chat_image.memory_clear()
+            resp_content = await self.chat_image.chat(nickname, text, image_url)
+            self.chat_text.messages.append(self.chat_image.messages[-1])
         else:
-            ChatCompletions = self.chat_text.ChatCompletions
-        try:
-            resp_content = await ChatCompletions()
-            self.chat_text.messages.append({"time": timestamp, "role": "assistant", "content": resp_content})
-        except Exception as err:
-            del self.chat_text.messages[-1]
-            logger.exception(err)
-            resp_content = None
+            resp_content = await self.chat_text.chat(nickname, text, image_url)
         return resp_content
 
     def memory_clear(self) -> None:

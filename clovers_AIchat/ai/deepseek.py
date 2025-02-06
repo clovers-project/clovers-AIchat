@@ -12,6 +12,10 @@ class Chat(OpenAIChat):
             self.think = False
         return await super().chat(nickname, text, image_url)
 
+    @staticmethod
+    async def build_content(text: str, image_url: str | None):
+        return text
+
     async def ChatCompletions(self):
         messages: list[ChatCompletionMessageParam] = [{"role": "system", "content": self.prompt_system}]
         messages.extend({"role": message["role"], "content": message["content"]} for message in self.messages)
