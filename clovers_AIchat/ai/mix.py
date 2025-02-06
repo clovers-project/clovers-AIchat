@@ -21,9 +21,17 @@ class Chat(AIChat):
 
     async def chat(self, nickname: str, text: str, image_url: str | None) -> str | None:
         if image_url:
+            now = datetime.now()
+            timestamp = now.timestamp()
+            try:
+                contect = await self.chat_text.build_content(f'{nickname} ({now.strftime("%Y-%m-%d %H:%M")}):{text}', None)
+            except Exception as err:
+                logger.exception(err)
+                return
             self.chat_image.memory_clear()
             resp_content = await self.chat_image.chat(nickname, text, image_url)
-            self.chat_text.messages.append(self.chat_image.messages[-1])
+            self.chat_text.messages.append({"time": timestamp, "role": "user", "content": contect})
+            self.chat_text.messages.append({"time": timestamp, "role": "assistant", "content": resp_content})
         else:
             resp_content = await self.chat_text.chat(nickname, text, image_url)
         return resp_content
