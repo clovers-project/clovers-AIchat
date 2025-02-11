@@ -1,6 +1,6 @@
 [project]
 name = "clovers-aichat"
-version = "0.2.7"
+version = "0.2.8"
 description = ""
 authors = [{ name = "KarisAya", email = "1048827424@qq.com" }]
 readme = "README.md"

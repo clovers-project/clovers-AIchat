@@ -1,3 +1,5 @@
+from clovers.tools import load_module
+from pathlib import Path
 from pydantic import BaseModel
 from .ai.main import AIChat, ChatInterface
 from .ai.mix import Chat as MixChat
@@ -20,9 +22,6 @@ def matchChat(key: str) -> tuple[type[ChatInterface], str]:
         case "gemini":
             return GeminiChat, "Gemini"
         case _:
-            from clovers.tools import load_module
-            from pathlib import Path
-
             Chat = load_module(".".join(Path(key).relative_to(Path()).parts), "Chat")
             if Chat and isinstance(Chat, type):
                 return Chat, key
