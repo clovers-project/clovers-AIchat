@@ -21,7 +21,7 @@ _✨ clovers 接入 AI api✨_
 - [x] [通义千问](https://tongyi.aliyun.com/)
 - [x] [Gemini](https://ai.google.dev/)
 - [x] [DeepSeek](https://www.deepseek.com/)
-- [x] [path..](./AIChat/)
+- [x] [path..](./ChatExample/)
 
 # 使用
 
@@ -224,4 +224,4 @@ whitelist = []
 
 当 deepseek-r1 模型使用 ollama 运行时，模型的思维链会和正文一起输出，然而如果对话上下文中含有思维链会导致 deepseek-r1 模型出现问题。
 
-于是这个类在内部使用正则对正文进行了额外处理。
+于是这个类在内部使用正则对正文进行了额外处理。其他请参考代码。
