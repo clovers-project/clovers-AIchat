@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from .ai.main import AIChat
+from .ai.main import AIChat, ChatInterface
 from .ai.mix import Chat as MixChat
 from .ai.openai import Chat as OpenAIChat
 from .ai.hunyuan import Chat as HunYuanChat
@@ -7,7 +7,7 @@ from .ai.gemini import Chat as GeminiChat
 from .ai.deepseek import Chat as DeepSeekChat
 
 
-def matchChat(key: str):
+def matchChat(key: str) -> tuple[type[ChatInterface], str]:
     match key:
         case "chatgpt":
             return OpenAIChat, "ChatGPT"
@@ -20,6 +20,12 @@ def matchChat(key: str):
         case "gemini":
             return GeminiChat, "Gemini"
         case _:
+            from clovers.tools import load_module
+            from pathlib import Path
+
+            Chat = load_module(".".join(Path(key).relative_to(Path()).parts), "Chat")
+            if Chat and isinstance(Chat, type):
+                return Chat, key
             raise ValueError(f"不支持的模型:{key}")
 
 
