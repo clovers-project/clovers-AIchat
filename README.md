@@ -21,6 +21,7 @@ _✨ clovers 接入 AI api✨_
 - [x] [通义千问](https://tongyi.aliyun.com/)
 - [x] [Gemini](https://ai.google.dev/)
 - [x] [DeepSeek](https://www.deepseek.com/)
+- [x] [path..](./AIChat/)
 
 # 使用
 
@@ -42,10 +43,11 @@ pip install clovers_AIchat
 <summary>clovers.toml</summary>
   
 ```toml
+
 [clovers_AIchat]
 timeout = 600
 memory = 20
-prompt_system = "\n你是有着二次元可爱少女形象的AI助手 名为小叶子"
+prompt_system = "\n 你是有着二次元可爱少女形象的 AI 助手 名为小叶子"
 [[clovers_AIchat.config_list]]
 key = "qwen"
 model = "qwen-plus"
@@ -80,7 +82,18 @@ key = "qwen"
 model = "qwen-vl-plus"
 url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 api_key = ""
+
+[[clovers_AIchat.config_list]]
+timeout = 3600
+memory = 60
+key = "./clovers_library/AIChat/ollama-deepseek"
+model = "DeepSeek-R1-Distill-Qwen-14B-Q4_K_M"
+url = "http://localhost:11434/v1/"
+api_key = "karis"
+whitelist = ["744751179"]
+
 ```
+
 </details>
 
 `timeout` 记忆保留时间，单位秒
@@ -92,7 +105,9 @@ api_key = ""
 建议在提示词中保留如下文本，否则可能会导致模型带格式回复。
 
 ```
-"你收到的消息格式为 "昵称 (日期 时间):消息" 例如 "小明 (2024-5-31 12:00):你好" 你的回复不应该有昵称，时间和日期。"
+
+'你收到的消息格式为 "昵称 (日期 时间):消息" 例如 "小明 (2024-5-31 12:00):你好" 你的回复不应该有昵称，时间和日期。'
+
 ```
 
 `config_list` 模型配置列表，模型配置列表内的每个元素都会单独创建一个模型类型，启用一个单独的客户端。
@@ -101,13 +116,14 @@ api_key = ""
 
 模型配置也就是 config_list 内的元素，包含以下参数：
 
-`key` 模型标识，目前支持 
+`key` 模型标识，目前支持
 - `chatgpt` ChatGPT
 - `hunyuan` 腾讯混元大模型
 - `qwen` 通义千问
 - `gemini` 谷歌 Gemini
 - `deepseek` DeepSeek
 - `mix` 图文混合模型（简单的用两个模型模拟图文多模态）。
+- `path` 从本地相对路径加载模型类
 
 `model` 模型名称，例如：`hunyuan-lite` `gemini-1.5-flash` `qwen-vl-plus` 等等
 
@@ -184,3 +200,18 @@ api_key = ""
 关于模型配置请跳转到 [模型配置](#模型配置) 查看。
 
 注意不能在上面两个模型配置中配置 key = `mix`
+
+## 相对路径
+
+如果模型配置的 key 是一个相对路径，那么本插件会尝试从本路径加载对话类。
+
+那么你需要填写的参数是你所加载的模型类写明的参数。
+
+你加载的对话类需要实现`clovers_AIchat.ai.main.ChatInterface`声明的方法
+
+本仓库示范中已经提供了一个`ollama-deepseek.py`示范，
+
+当 deepseek-r1 模型使用 ollama 运行时，模型的思维链会和正文一起输出，然而如果对话上下文中含有思维链会导致 deepseek-r1 模型出现问题。
+
+于是这个类在内部使用正则对正文进行了额外处理。请参考代码。
+```
