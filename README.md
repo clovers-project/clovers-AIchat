@@ -108,7 +108,7 @@ whitelist = ["744751179"]
 
 '你收到的消息格式为 "昵称 (日期 时间):消息" 例如 "小明 (2024-5-31 12:00):你好" 你的回复不应该有昵称，时间和日期。'
 
-```
+````
 
 `config_list` 模型配置列表，模型配置列表内的每个元素都会单独创建一个模型类型，启用一个单独的客户端。
 
@@ -209,9 +209,19 @@ whitelist = ["744751179"]
 
 你加载的对话类需要实现`clovers_AIchat.ai.main.ChatInterface`声明的方法
 
-本仓库示范中已经提供了一个`ollama-deepseek.py`示范，
+本仓库示范中已经提供了一个`ollama-deepseek.py`示范，配置应该是：
+
+```toml
+
+[[clovers_AIchat.config_list]]
+key = "./clovers_library/AIChat/ollama-deepseek"
+model = "DeepSeek-R1-Distill-Qwen-14B-Q4_K_M"
+url = "http://localhost:11434/v1/"
+api_key = "karis"
+whitelist = []
+
+````
 
 当 deepseek-r1 模型使用 ollama 运行时，模型的思维链会和正文一起输出，然而如果对话上下文中含有思维链会导致 deepseek-r1 模型出现问题。
 
-于是这个类在内部使用正则对正文进行了额外处理。请参考代码。
-```
+于是这个类在内部使用正则对正文进行了额外处理。
