@@ -6,11 +6,12 @@ AI 群聊机器人群聊
 
 _✨ clovers 接入 AI api✨_
 
-[![python](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/)
-[![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
-[![license](https://img.shields.io/github/license/clovers-project/clovers-AIchat.svg)](./LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/)
 [![pypi](https://img.shields.io/pypi/v/clovers_aichat.svg)](https://pypi.python.org/pypi/clovers_aichat)
 [![pypi download](https://img.shields.io/pypi/dm/clovers_aichat)](https://pypi.python.org/pypi/clovers_aichat)
+[![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
+[![Github](https://img.shields.io/badge/GitHub-Clovers-00CC33?logo=github)](https://github.com/clovers-project/clovers)
+[![license](https://img.shields.io/github/license/clovers-project/clovers-AIchat.svg)](./LICENSE)
 
 </div>
 
