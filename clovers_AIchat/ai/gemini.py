@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-import httpx
 import base64
 from .main import ChatInterface, ChatInfo
 
@@ -11,15 +10,14 @@ class Config(ChatInfo, BaseModel):
 class Chat(ChatInterface):
     """Gemini"""
 
-    def __init__(self, config: dict) -> None:
-        super().init()
+    def _parse_config(self, config: dict):
         _config = Config.model_validate(config)
         self.model = _config.model
-        self.prompt_system = _config.prompt_system
+        self.system_prompt = _config.system_prompt
+        self.style_prompt = _config.style_prompt
         self.memory = _config.memory
         self.timeout = _config.timeout
         self.url = f"{_config.url.rstrip("/")}/{_config.model}:generateContent?key={_config.api_key}"
-        self.async_client = httpx.AsyncClient(proxy=_config.proxy)
 
     async def build_content(self, text: str, image_url: str | None):
         data: list[dict] = [{"text": text}]
@@ -31,7 +29,7 @@ class Chat(ChatInterface):
 
     async def ChatCompletions(self):
         data = {
-            "system_instruction": {"parts": {"text": self.prompt_system}},
+            "system_instruction": {"parts": {"text": self.system_prompt}},
             "contents": [
                 (
                     {

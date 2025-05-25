@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-import httpx
 from openai import AsyncOpenAI
 from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
 from .main import ChatInterface, ChatInfo
@@ -12,17 +11,17 @@ class Config(ChatInfo, BaseModel):
 class Chat(ChatInterface):
     """OpenAI"""
 
-    def __init__(self, config: dict) -> None:
-        super().init()
+    def _parse_config(self, config: dict) -> None:
         _config = Config.model_validate(config)
         self.model = _config.model
-        self.prompt_system = _config.prompt_system
+        self.system_prompt = _config.system_prompt
+        self.style_prompt = _config.style_prompt
         self.memory = _config.memory
         self.timeout = _config.timeout
         _url = _config.url
         _api_key = _config.api_key
-        _client = httpx.AsyncClient(headers={"Content-Type": "application/json"}, proxy=_config.proxy)
-        self.async_client = AsyncOpenAI(api_key=_api_key, base_url=_url, http_client=_client)
+        # _client = httpx.AsyncClient(headers={"Content-Type": "application/json"}, proxy=_config.proxy)
+        self._client = AsyncOpenAI(api_key=_api_key, base_url=_url, http_client=self.async_client)
 
     @staticmethod
     async def build_content(text: str, image_url: str | None):
@@ -34,7 +33,7 @@ class Chat(ChatInterface):
         return text
 
     async def ChatCompletions(self):
-        messages: list[ChatCompletionMessageParam] = [{"role": "system", "content": self.prompt_system}]
+        messages: list[ChatCompletionMessageParam] = [{"role": "system", "content": self.system_prompt}]
         messages.extend({"role": message["role"], "content": message["content"]} for message in self.messages)
-        resp = await self.async_client.chat.completions.create(model=self.model, messages=messages)
+        resp = await self._client.chat.completions.create(model=self.model, messages=messages)
         return resp.choices[0].message.content

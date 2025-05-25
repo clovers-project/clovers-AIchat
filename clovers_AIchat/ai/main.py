@@ -1,7 +1,10 @@
+import httpx
 from datetime import datetime
 from abc import ABC, abstractmethod
 from typing import Any
-from clovers.logger import logger
+from logging import getLogger
+
+logger = getLogger("AICHAT")
 
 
 class AIChat(ABC):
@@ -9,6 +12,10 @@ class AIChat(ABC):
 
     model: str
     """模型版本名"""
+    system_prompt: str
+    """系统提示词"""
+    style_prompt: str
+    """风格提示词"""
 
     def __init__(self) -> None:
         self.running: bool = False
@@ -19,9 +26,6 @@ class AIChat(ABC):
     @abstractmethod
     def memory_clear(self) -> None: ...
 
-    @abstractmethod
-    def set_prompt_system(self, prompt_system: str) -> None: ...
-
 
 class ChatInfo:
     """对话设置"""
@@ -30,14 +34,14 @@ class ChatInfo:
     """接入点url"""
     model: str
     """模型版本名"""
-    prompt_system: str
-    """系统提示词"""
     memory: int
     """对话记录长度"""
     timeout: int | float
     """对话超时时间"""
-    proxy: str | None = None
-    """代理地址"""
+    system_prompt: str
+    """系统提示词"""
+    style_prompt: str
+    """风格提示词"""
 
 
 class ChatInterface(ChatInfo, AIChat):
@@ -49,13 +53,17 @@ class ChatInterface(ChatInfo, AIChat):
     """对话记录长度"""
     timeout: int | float
     """对话超时时间"""
+    date: str
+    """当前日期"""
 
-    def init(self) -> None:
+    def __init__(self, config: dict, async_client: httpx.AsyncClient) -> None:
         super().__init__()
         self.messages: list[dict] = []
+        self._parse_config(config)
+        self.async_client = async_client
 
     @abstractmethod
-    def __init__(self, config: dict) -> None: ...
+    def _parse_config(self, config: dict) -> dict: ...
 
     @abstractmethod
     async def build_content(self, text: str, image_url: str | None) -> Any: ...
@@ -71,14 +79,24 @@ class ChatInterface(ChatInfo, AIChat):
             self.messages = self.messages[1:]
         assert self.messages[0]["role"] == "user"
 
+    @property
+    def system_prompt(self) -> str:
+        """系统提示词"""
+        return f"{self._system_prompt}\n{self.style_prompt}\n{self.date}"
+
+    @system_prompt.setter
+    def system_prompt(self, system_prompt: str) -> None:
+        self._system_prompt = system_prompt
+
     async def chat(self, nickname: str, text: str, image_url: str | None) -> str | None:
         now = datetime.now()
-        timestamp = now.timestamp()
+        self.date = f'date:{now.strftime("%Y-%m-%d")}'
         try:
-            contect = await self.build_content(f'{nickname} ({now.strftime("%Y-%m-%d %H:%M")}):{text}', image_url)
+            contect = await self.build_content(f'{nickname} [{now.strftime("%H:%M")}] {text}', image_url)
         except Exception as err:
             logger.exception(err)
             return
+        timestamp = now.timestamp()
         self.messages.append({"time": timestamp, "role": "user", "content": contect})
         self.memory_filter(timestamp)
         try:
@@ -92,6 +110,3 @@ class ChatInterface(ChatInfo, AIChat):
 
     def memory_clear(self) -> None:
         self.messages.clear()
-
-    def set_prompt_system(self, prompt_system: str) -> None:
-        self.prompt_system = prompt_system

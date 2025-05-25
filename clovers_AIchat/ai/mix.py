@@ -40,4 +40,4 @@ class Chat(AIChat):
         self.chat_text.messages.clear()
 
     def set_prompt_system(self, prompt_system: str) -> None:
-        self.chat_text.prompt_system = prompt_system
+        self.chat_text.system_prompt = prompt_system

@@ -22,9 +22,9 @@ class Chat(OpenAIChat):
         self.messages.append({"time": timestamp, "role": "user", "content": contect})
         self.memory_filter(timestamp)
         try:
-            messages: list[ChatCompletionMessageParam] = [{"role": "system", "content": self.prompt_system}]
+            messages: list[ChatCompletionMessageParam] = [{"role": "system", "content": self.system_prompt}]
             messages.extend({"role": message["role"], "content": message["content"]} for message in self.messages)
-            resp = await self.async_client.chat.completions.create(model=self.model, messages=messages)
+            resp = await self._client.chat.completions.create(model=self.model, messages=messages)
             resp_content = resp.choices[0].message.content
             self.messages.append({"time": timestamp, "role": "assistant", "content": resp_content})
             if think:

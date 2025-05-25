@@ -3,7 +3,6 @@ from pydantic import BaseModel
 import hashlib
 import hmac
 import json
-import httpx
 from .main import ChatInterface, ChatInfo
 
 
@@ -55,25 +54,24 @@ def headers(
 class Chat(ChatInterface):
     """腾讯混元"""
 
-    def __init__(self, config: dict) -> None:
-        super().init()
+    def _parse_config(self, config: dict):
         _config = Config.model_validate(config)
         self.model = _config.model
-        self.prompt_system = _config.prompt_system
+        self.system_prompt = _config.system_prompt
+        self.style_prompt = _config.style_prompt
         self.memory = _config.memory
         self.timeout = _config.timeout
         self.url = _config.url
         self.host = self.url.split("//", 1)[1]
         self.secret_id = _config.secret_id
         self.secret_key = _config.secret_key
-        self.async_client = httpx.AsyncClient(proxy=_config.proxy)
 
     @staticmethod
     async def build_content(text: str, image_url: str | None):
         return text
 
     async def ChatCompletions(self):
-        messages = [{"Role": "system", "Content": self.prompt_system}]
+        messages = [{"Role": "system", "Content": self.system_prompt}]
         messages.extend({"Role": message["role"], "Content": message["content"]} for message in self.messages)
         payload = {"Model": self.model, "Messages": messages}
         payload = json.dumps({"Model": self.model, "Messages": messages}, separators=(",", ":"), ensure_ascii=False)

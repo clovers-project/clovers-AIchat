@@ -1,7 +1,7 @@
-from clovers.tools import load_module
+import httpx
 from pathlib import Path
 from pydantic import BaseModel
-from .ai.main import AIChat, ChatInterface
+from .ai.main import AIChat
 from .ai.mix import Chat as MixChat
 from .ai.openai import Chat as OpenAIChat
 from .ai.hunyuan import Chat as HunYuanChat
@@ -9,7 +9,7 @@ from .ai.gemini import Chat as GeminiChat
 from .ai.deepseek import Chat as DeepSeekChat
 
 
-def matchChat(key: str) -> tuple[type[ChatInterface], str]:
+def matchChat(key: str):
     match key:
         case "chatgpt":
             return OpenAIChat, "ChatGPT"
@@ -22,10 +22,11 @@ def matchChat(key: str) -> tuple[type[ChatInterface], str]:
         case "gemini":
             return GeminiChat, "Gemini"
         case _:
-            Chat = load_module(".".join(Path(key).relative_to(Path()).parts), "Chat")
-            if Chat and isinstance(Chat, type):
-                return Chat, key
-            raise ValueError(f"不支持的模型:{key}")
+            from importlib import import_module
+
+            Chat = getattr(import_module(".".join(Path(key).relative_to(Path()).parts)), "Chat", None)
+            assert Chat and isinstance(Chat, type), f"不支持的模型:{key}"
+            return Chat, key
 
 
 class ManagerInfo:
@@ -35,6 +36,8 @@ class ManagerInfo:
     """白名单"""
     blacklist: set[str] = set()
     """黑名单"""
+    proxy: str | None = None
+    """代理地址"""
 
 
 class ManagerConfig(ManagerInfo, BaseModel):
@@ -58,29 +61,33 @@ class Manager(ManagerInfo):
         if config["key"] == "mix":
             self.name = "图文混合模型"
             _config = MixManagerConfig.model_validate(config)
+            self.async_client = httpx.AsyncClient(proxy=_config.proxy)
             ChatText, textchatname = matchChat(_config.text["key"])
-            chat_text = ChatText(config | _config.text)
+            chat_text = ChatText(config | _config.text, self.async_client)
             ChatImage, imagechatname = matchChat(_config.image["key"])
-            chat_image = ChatImage(config | _config.image)
+            chat_image = ChatImage(config | _config.image, self.async_client)
             model = f"text:{textchatname}:{chat_text.model} - image:{imagechatname}:{chat_image.model}"
-
-            def newChat(config: dict):
-                return MixChat(
-                    _config.whitelist,
-                    _config.blacklist,
-                    chat_text,
-                    chat_image,
-                    model,
-                )
-
-            self.newChat = newChat
+            self.newChat = lambda: MixChat(_config.whitelist, _config.blacklist, chat_text, chat_image, model)
         else:
             _config = ManagerConfig.model_validate(config)
-            self.newChat, self.name = matchChat(config["key"])
+            self.async_client = httpx.AsyncClient(proxy=_config.proxy)
+            newChat, self.name = matchChat(config["key"])
+            self.newChat = lambda: newChat(self.config, self.async_client)
         self.whitelist = _config.whitelist
         self.blacklist = _config.blacklist
 
     def chat(self, group_id: str):
         if group_id not in self.chats:
-            self.chats[group_id] = self.newChat(self.config)
+            self.chats[group_id] = self.newChat()
         return self.chats[group_id]
+
+    def check(self, group_id: str) -> bool: ...
+
+    def none_check(self, group_id: str) -> bool:
+        return True
+
+    def whitelist_check(self, group_id: str) -> bool:
+        return group_id in self.whitelist
+
+    def blacklist_check(self, group_id: str) -> bool:
+        return group_id not in self.blacklist

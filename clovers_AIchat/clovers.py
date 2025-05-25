@@ -1,28 +1,12 @@
-from clovers import Event as CloversEvent
+from clovers import EventProtocol
+from typing import Protocol
 
 
-class Event:
-    def __init__(self, event: CloversEvent):
-        self.event: CloversEvent = event
-
-    @property
-    def nickname(self) -> str:
-        return self.event.properties["nickname"]
-
-    @property
-    def group_id(self) -> str:
-        return self.event.properties["group_id"]
-
-    @property
-    def to_me(self) -> bool:
-        return self.event.properties["to_me"]
-
-    @property
-    def permission(self) -> int:
-        return self.event.properties["permission"]
-
-    @property
-    def image_url(self) -> str | None:
-        image_list = self.event.properties["image_list"]
-        if image_list:
-            return image_list[0]
+class Event(EventProtocol, Protocol):
+    Bot_Nickname: str
+    user_id: str
+    group_id: str | None
+    to_me: bool
+    nickname: str
+    image_list: list[str]
+    permission: int
