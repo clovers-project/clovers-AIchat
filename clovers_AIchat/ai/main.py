@@ -59,8 +59,8 @@ class ChatInterface(ChatInfo, AIChat):
     def __init__(self, config: dict, async_client: httpx.AsyncClient) -> None:
         super().__init__()
         self.messages: list[dict] = []
-        self._parse_config(config)
         self.async_client = async_client
+        self._parse_config(config)
 
     @abstractmethod
     def _parse_config(self, config: dict) -> dict: ...
