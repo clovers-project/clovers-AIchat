@@ -3,7 +3,7 @@ from pydantic import BaseModel
 import hashlib
 import hmac
 import json
-from .main import ChatInterface, ChatInfo
+from ..core import ChatInterface, ChatInfo
 
 
 class Config(ChatInfo, BaseModel):
@@ -66,25 +66,15 @@ class Chat(ChatInterface):
         self.secret_id = _config.secret_id
         self.secret_key = _config.secret_key
 
-    @staticmethod
-    async def build_content(text: str, image_url: str | None):
-        return text
-
     async def ChatCompletions(self):
         messages = [{"Role": "system", "Content": self.system_prompt}]
-        messages.extend({"Role": message["role"], "Content": message["content"]} for message in self.messages)
+        messages.extend({"Role": message["role"], "Content": message["text"]} for message in self.messages)
         payload = {"Model": self.model, "Messages": messages}
         payload = json.dumps({"Model": self.model, "Messages": messages}, separators=(",", ":"), ensure_ascii=False)
-        resp = (
-            await self.async_client.post(
-                self.url,
-                headers=headers(
-                    secret_id=self.secret_id,
-                    secret_key=self.secret_key,
-                    host=self.host,
-                    payload=payload,
-                ),
-                content=payload,
-            )
-        ).raise_for_status()
-        return resp.json()["Response"]["Choices"][0]["Message"]["Content"]
+        resp = await self.async_client.post(
+            self.url,
+            headers=headers(secret_id=self.secret_id, secret_key=self.secret_key, host=self.host, payload=payload),
+            content=payload,
+        )
+        resp.raise_for_status()
+        return resp.json()["Response"]["Choices"][0]["Message"]["Content"].strip()

@@ -1,6 +1,11 @@
 from pydantic import BaseModel
 import base64
-from .main import ChatInterface, ChatInfo
+from typing import TypedDict
+from ..core import ChatInterface, ChatInfo, ChatContext as BaseChatContext
+
+
+class ChatContext(BaseChatContext, TypedDict):
+    image_data: str | None
 
 
 class Config(ChatInfo, BaseModel):
@@ -9,6 +14,8 @@ class Config(ChatInfo, BaseModel):
 
 class Chat(ChatInterface):
     """Gemini"""
+
+    messages: list[ChatContext]
 
     def _parse_config(self, config: dict):
         _config = Config.model_validate(config)
@@ -28,22 +35,25 @@ class Chat(ChatInterface):
         return data
 
     async def ChatCompletions(self):
+        async def build_content(message: ChatContext) -> dict:
+            context = []
+            context.append({"text": message["text"]})
+            image_url = message["image_url"]
+            if image_url:
+                if (image_data := message.get("image_data")) is None:
+                    response = (await self.async_client.get(image_url)).raise_for_status()
+                    image_data = base64.b64encode(response.content).decode("utf-8")
+                    message["image_data"] = image_data
+                context.append({"inline_data": {"mime_type": "image/jpeg", "data": image_data}})
+            if message["role"] == "user":
+                return {"role": "user", "parts": context}
+            else:
+                return {"role": "model", "parts": context}
+
         data = {
             "system_instruction": {"parts": {"text": self.system_prompt}},
-            "contents": [
-                (
-                    {
-                        "role": "user",
-                        "parts": message["content"],
-                    }
-                    if message["role"] == "user"
-                    else {
-                        "role": "model",
-                        "parts": [{"text": message["content"]}],
-                    }
-                )
-                for message in self.messages
-            ],
+            "contents": [await build_content(message) for message in self.messages],
         }
-        resp = (await self.async_client.post(self.url, json=data, headers={"Content-Type": "application/json"})).raise_for_status()
-        return resp.json()["candidates"][0]["content"]["parts"][0]["text"].rstrip("\n")
+        resp = await self.async_client.post(self.url, json=data, headers={"Content-Type": "application/json"})
+        resp.raise_for_status()
+        return resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()

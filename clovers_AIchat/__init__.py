@@ -80,7 +80,7 @@ async def _(event: Event):
     if manager is not None:
         chat = manager.chat(group_id)
         chat.memory_clear()
-        return f"本群【{manager.name} - {chat.model}】记忆已清除！"
+        return f"本群【{manager.name} - {chat.name}】记忆已清除！"
 
 
 @plugin.handle(["修改设定"], ["user_id", "group_id", "to_me", "permission"], rule=permission_check, block=True)
@@ -94,10 +94,10 @@ async def _(event: Event):
     if style_prompt:
         chat.memory_clear()
         chat.style_prompt = style_prompt
-        return f"本群【{manager.name} - {chat.model}】设定已修改！"
+        return f"本群【{manager.name} - {chat.name}】设定已修改！"
     else:
         del manager.chats[group_id]
-        return f"本群【{manager.name} - {chat.model}】设定已重置！"
+        return f"本群【{manager.name} - {chat.name}】设定已重置！"
 
 
 @plugin.handle(None, ["group_id", "nickname", "to_me", "image_list"], rule=to_me, priority=1, block=False)

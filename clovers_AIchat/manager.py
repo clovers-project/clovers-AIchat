@@ -1,22 +1,21 @@
 import httpx
 from pathlib import Path
 from pydantic import BaseModel
-from .ai.main import AIChat
+from .core import AIChat, ChatInterface
 from .ai.mix import Chat as MixChat
 from .ai.openai import Chat as OpenAIChat
 from .ai.hunyuan import Chat as HunYuanChat
 from .ai.gemini import Chat as GeminiChat
-from .ai.deepseek import Chat as DeepSeekChat
 
 
-def matchChat(key: str):
+def matchChat(key: str) -> tuple[type[ChatInterface], str]:
     match key:
         case "chatgpt":
             return OpenAIChat, "ChatGPT"
         case "qwen":
             return OpenAIChat, "通义千问"
         case "deepseek":
-            return DeepSeekChat, "DeepSeek"
+            return OpenAIChat, "DeepSeek"
         case "hunyuan":
             return HunYuanChat, "腾讯混元"
         case "gemini":
@@ -25,8 +24,9 @@ def matchChat(key: str):
             from importlib import import_module
 
             Chat = getattr(import_module(".".join(Path(key).relative_to(Path()).parts)), "Chat", None)
-            assert Chat and isinstance(Chat, type), f"不支持的模型:{key}"
-            return Chat, key
+            if Chat and issubclass(Chat, ChatInterface):
+                return Chat, key
+            raise ValueError(f"不支持的模型:{key}")
 
 
 class ManagerInfo:
@@ -59,18 +59,17 @@ class Manager(ManagerInfo):
         self.chats: dict[str, AIChat] = {}
         self.config = config
         if config["key"] == "mix":
-            self.name = "图文混合模型"
             _config = MixManagerConfig.model_validate(config)
-            self.async_client = httpx.AsyncClient(proxy=_config.proxy)
-            ChatText, textchatname = matchChat(_config.text["key"])
+            self.async_client = httpx.AsyncClient(proxy=_config.proxy, timeout=60.0)
+            ChatText, ChatTextName = matchChat(_config.text["key"])
             chat_text = ChatText(config | _config.text, self.async_client)
-            ChatImage, imagechatname = matchChat(_config.image["key"])
+            ChatImage, ChatImageName = matchChat(_config.image["key"])
             chat_image = ChatImage(config | _config.image, self.async_client)
-            model = f"text:{textchatname}:{chat_text.model} - image:{imagechatname}:{chat_image.model}"
-            self.newChat = lambda: MixChat(_config.whitelist, _config.blacklist, chat_text, chat_image, model)
+            self.name = f"Mix({ChatTextName},{ChatImageName})"
+            self.newChat = lambda: MixChat(_config.whitelist, _config.blacklist, chat_text, chat_image)
         else:
             _config = ManagerConfig.model_validate(config)
-            self.async_client = httpx.AsyncClient(proxy=_config.proxy)
+            self.async_client = httpx.AsyncClient(proxy=_config.proxy, timeout=60.0)
             newChat, self.name = matchChat(config["key"])
             self.newChat = lambda: newChat(self.config, self.async_client)
         self.whitelist = _config.whitelist
@@ -81,7 +80,8 @@ class Manager(ManagerInfo):
             self.chats[group_id] = self.newChat()
         return self.chats[group_id]
 
-    def check(self, group_id: str) -> bool: ...
+    def check(self, group_id: str) -> bool:
+        raise NotImplementedError("check 方法未注入，请在创建实例时设置 check 方法")
 
     def none_check(self, group_id: str) -> bool:
         return True

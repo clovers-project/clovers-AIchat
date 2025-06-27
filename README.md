@@ -31,7 +31,7 @@ _✨ clovers 接入 AI api✨_
 # 安装
 
 ```shell
-pip install clovers_AIchat
+pip install clovers_aichat
 ```
 
 # 配置

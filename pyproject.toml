@@ -1,6 +1,6 @@
 [project]
 name = "clovers-aichat"
-version = "0.3.0r1"
+version = "1.0.0"
 description = ""
 authors = [{ name = "KarisAya", email = "karisaya@foxmail.com" }]
 readme = "README.md"
@@ -8,7 +8,6 @@ requires-python = ">=3.12,<4.0.0"
 dependencies = [
     "clovers (>=0.4.6,<0.5)",
     "pydantic (>=2.10.6,<3.0.0)",
-    "openai (>=1.60.1,<2.0.0)",
     "httpx (>=0.28.1,<0.29.0)",
 ]
 
