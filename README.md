@@ -26,7 +26,7 @@ _✨ clovers 接入 AI api✨_
 
 # 使用
 
-使用 DeepSeek 时在对话后接 `--think` 可以输出思维链
+to_me 没有被其他插件响应的命令会自动调用 AIChat
 
 # 安装
 
@@ -42,13 +42,14 @@ pip install clovers_aichat
 
 <details>
 <summary>clovers.toml</summary>
-  
+
 ```toml
 
 [clovers_aichat]
 timeout = 600
 memory = 20
-prompt_system = "\n 你是有着二次元可爱少女形象的 AI 助手 名为小叶子"
+system_prompt = "你收到的消息格式为 \"name [time] message\" 例如 \"小明 [12:00] 你好\" 你的回复不应该有昵称，时间和日期。"
+style_prompt = "你是一个猫娘"
 [[clovers_aichat.config_list]]
 key = "qwen"
 model = "qwen-plus"
@@ -56,6 +57,7 @@ url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 api_key = ""
 whitelist = []
 blacklist = []
+proxy = "http://127.0.0.1:7897"
 
 [[clovers_aichat.config_list]]
 key = "hunyuan"
@@ -66,8 +68,6 @@ secret_key = ""
 whitelist = []
 blacklist = []
 
-[clovers_aichat.config_list.proxies]
-"https://" = "http://127.0.0.1:7897"
 [[clovers_aichat.config_list]]
 key = "mix"
 whitelist = []
@@ -93,6 +93,7 @@ url = "http://localhost:11434/v1/"
 api_key = "karis"
 whitelist = ["744751179"]
 
+
 ```
 
 </details>
@@ -101,15 +102,13 @@ whitelist = ["744751179"]
 
 `memory` 记忆条数
 
-`prompt_system` 系统提示词
+`system_prompt` 系统提示词
 
 建议在提示词中保留如下文本，否则可能会导致模型带格式回复。
 
-```
+`你收到的消息格式为 \"name [time] message\" 例如 \"小明 [12:00] 你好\" 你的回复不应该有昵称，时间和日期。`
 
-'你收到的消息格式为 "昵称 (日期 时间):消息" 例如 "小明 (2024-5-31 12:00):你好" 你的回复不应该有昵称，时间和日期。'
-
-````
+`style_prompt` 风格提示词，这里是 ai 扮演的人物设定。
 
 `config_list` 模型配置列表，模型配置列表内的每个元素都会单独创建一个模型类型，启用一个单独的客户端。
 
@@ -118,6 +117,7 @@ whitelist = ["744751179"]
 模型配置也就是 config_list 内的元素，包含以下参数：
 
 `key` 模型标识，目前支持
+
 - `chatgpt` ChatGPT
 - `hunyuan` 腾讯混元大模型
 - `qwen` 通义千问
@@ -143,6 +143,8 @@ whitelist = ["744751179"]
 `memory` 为模型单独配置的记忆条数。
 
 `prompt_system` 为模型单独配置系统提示词
+
+`style_prompt` 为模型单独配置风格提示词
 
 以上三个的参数优先使用，如果没有配置就使用全局配置。
 
@@ -208,7 +210,7 @@ whitelist = ["744751179"]
 
 那么你需要填写的参数是你所加载的模型类写明的参数。
 
-你加载的对话类需要实现`clovers_aichat.core.ChatInterface`声明的方法
+你加载的对话类需要实现 `clovers_aichat.core.ChatInterface` 声明的方法
 
 本仓库示范中已经提供了一个`ollama-deepseek.py`示范，配置应该是：
 
@@ -221,7 +223,7 @@ url = "http://localhost:11434/v1/"
 api_key = "karis"
 whitelist = []
 
-````
+```
 
 当 deepseek-r1 模型使用 ollama 运行时，模型的思维链会和正文一起输出，然而如果对话上下文中含有思维链会导致 deepseek-r1 模型出现问题。
 
