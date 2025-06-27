@@ -23,7 +23,7 @@ def matchChat(key: str) -> tuple[type[ChatInterface], str]:
         case _:
             from importlib import import_module
 
-            Chat = getattr(import_module(".".join(Path(key).relative_to(Path()).parts)), "Chat", None)
+            Chat = getattr(import_module(".".join(Path(key.rstrip(".py")).relative_to(Path()).parts)), "Chat", None)
             if Chat and issubclass(Chat, ChatInterface):
                 return Chat, key
             raise ValueError(f"不支持的模型:{key}")

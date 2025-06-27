@@ -21,5 +21,6 @@ class Chat(OpenAIChat):
         resp_content: str = resp.json()["choices"][0]["message"]["content"].strip()
         matcher = pattern.match(resp_content)
         if matcher is None:
-            raise ValueError("Invalid response")
-        return matcher.group(1)
+            return resp_content
+        else:
+            return matcher.group(2).strip()

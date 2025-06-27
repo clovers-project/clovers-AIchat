@@ -45,11 +45,11 @@ pip install clovers_aichat
   
 ```toml
 
-[clovers_AIchat]
+[clovers_aichat]
 timeout = 600
 memory = 20
 prompt_system = "\n 你是有着二次元可爱少女形象的 AI 助手 名为小叶子"
-[[clovers_AIchat.config_list]]
+[[clovers_aichat.config_list]]
 key = "qwen"
 model = "qwen-plus"
 url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
@@ -57,7 +57,7 @@ api_key = ""
 whitelist = []
 blacklist = []
 
-[[clovers_AIchat.config_list]]
+[[clovers_aichat.config_list]]
 key = "hunyuan"
 model = "hunyuan-lite"
 url = "https://hunyuan.tencentcloudapi.com"
@@ -66,25 +66,25 @@ secret_key = ""
 whitelist = []
 blacklist = []
 
-[clovers_AIchat.config_list.proxies]
+[clovers_aichat.config_list.proxies]
 "https://" = "http://127.0.0.1:7897"
-[[clovers_AIchat.config_list]]
+[[clovers_aichat.config_list]]
 key = "mix"
 whitelist = []
 blacklist = []
 
-[clovers_AIchat.config_list.text]
+[clovers_aichat.config_list.text]
 key = "qwen"
 model = "qwen-plus"
 url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 api_key = ""
-[clovers_AIchat.config_list.image]
+[clovers_aichat.config_list.image]
 key = "qwen"
 model = "qwen-vl-plus"
 url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 api_key = ""
 
-[[clovers_AIchat.config_list]]
+[[clovers_aichat.config_list]]
 timeout = 3600
 memory = 60
 key = "./clovers_library/AIChat/ollama-deepseek"
@@ -208,13 +208,13 @@ whitelist = ["744751179"]
 
 那么你需要填写的参数是你所加载的模型类写明的参数。
 
-你加载的对话类需要实现`clovers_AIchat.ai.main.ChatInterface`声明的方法
+你加载的对话类需要实现`clovers_aichat.ai.main.ChatInterface`声明的方法
 
 本仓库示范中已经提供了一个`ollama-deepseek.py`示范，配置应该是：
 
 ```toml
 
-[[clovers_AIchat.config_list]]
+[[clovers_aichat.config_list]]
 key = "./clovers_library/AIChat/ollama-deepseek"
 model = "DeepSeek-R1-Distill-Qwen-14B-Q4_K_M"
 url = "http://localhost:11434/v1/"
