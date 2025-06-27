@@ -17,11 +17,11 @@ _✨ clovers 接入 AI api✨_
 
 目前支持的 AI 平台有：
 
-- [x] [ChatGPT](https://openai.com/)
+- [x] [ChatGPT](https://openai.com/)(OpenAI)
 - [x] [腾讯混元大模型](https://hunyuan.tencent.com/)
-- [x] [通义千问](https://tongyi.aliyun.com/)
+- [x] [通义千问](https://tongyi.aliyun.com/)(OpenAI)
 - [x] [Gemini](https://ai.google.dev/)
-- [x] [DeepSeek](https://www.deepseek.com/)
+- [x] [DeepSeek](https://www.deepseek.com/)(OpenAI)
 - [x] [path..](./ChatExample/)
 
 # 使用
@@ -208,14 +208,14 @@ whitelist = ["744751179"]
 
 那么你需要填写的参数是你所加载的模型类写明的参数。
 
-你加载的对话类需要实现`clovers_aichat.ai.main.ChatInterface`声明的方法
+你加载的对话类需要实现`clovers_aichat.core.ChatInterface`声明的方法
 
 本仓库示范中已经提供了一个`ollama-deepseek.py`示范，配置应该是：
 
 ```toml
 
 [[clovers_aichat.config_list]]
-key = "./clovers_library/AIChat/ollama-deepseek"
+key = "./clovers_library/AIChat/ollama-deepseek.py"
 model = "DeepSeek-R1-Distill-Qwen-14B-Q4_K_M"
 url = "http://localhost:11434/v1/"
 api_key = "karis"
